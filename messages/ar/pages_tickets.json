@@ -1,0 +1,39 @@
+{
+    "tickets": {
+        "subtitle": "إدارة وتتبع تذاكر دعم الزبائن",
+        "searchPlaceholder": "البحث في التذاكر...",
+        "new_ticket": "تذكرة جديدة",
+        "edit_ticket": "تعديل التذكرة",
+        "fields": {
+            "title": "العنوان",
+            "userInfo": "المستخدم",
+            "note": "ملاحظة"
+        },
+        "detail": {
+            "title": "تفاصيل التذكرة",
+            "details": "التفاصيل",
+            "reference": "المرجع",
+            "no_messages": "لا توجد رسائل بعد",
+            "type_message": "اكتب رسالتك...",
+            "send": "إرسال",
+            "not_found": "البلاغ غير موجود",
+            "back_to_tickets": "العودة إلى التذاكر",
+            "internal_note": "ملاحظة داخلية",
+            "send_shortcut_hint": "Shift + Enter",
+            "empty_state_description": "ابدأ المحادثة بإرسال رسالة أدناه",
+            "loading_messages": "جاري تحميل الرسائل...",
+            "loading_conversation": "جاري تحميل المحادثة...",
+            "customer": "الزبون",
+            "unknown": "غير معروف",
+            "no_code": "بدون رمز",
+            "status": "الحالة",
+            "created": "تاريخ الإنشاء",
+            "send_hint_prefix": "اضغط",
+            "send_hint_middle": "للإرسال،",
+            "send_hint_suffix": "لسطر جديد"
+        },
+        "connection": {
+            "connecting": "جاري الاتصال..."
+        }
+    }
+}

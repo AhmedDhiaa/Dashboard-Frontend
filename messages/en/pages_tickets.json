@@ -1,0 +1,39 @@
+{
+    "tickets": {
+        "subtitle": "Manage and track customer support tickets",
+        "searchPlaceholder": "Search tickets...",
+        "new_ticket": "New Ticket",
+        "edit_ticket": "Edit Ticket",
+        "fields": {
+            "title": "Title",
+            "userInfo": "User",
+            "note": "Note"
+        },
+        "detail": {
+            "title": "Ticket Details",
+            "details": "Details",
+            "reference": "Reference",
+            "no_messages": "No messages yet",
+            "type_message": "Type your message...",
+            "send": "Send",
+            "not_found": "Ticket Not Found",
+            "back_to_tickets": "Back to Tickets",
+            "internal_note": "Internal Note",
+            "send_shortcut_hint": "Shift + Enter",
+            "empty_state_description": "Start the conversation by sending a message below",
+            "loading_messages": "Loading messages...",
+            "loading_conversation": "Loading conversation...",
+            "customer": "Customer",
+            "unknown": "Unknown",
+            "no_code": "No Code",
+            "status": "Status",
+            "created": "Created",
+            "send_hint_prefix": "Press",
+            "send_hint_middle": "to send,",
+            "send_hint_suffix": "for new line"
+        },
+        "connection": {
+            "connecting": "Connecting..."
+        }
+    }
+}

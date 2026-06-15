@@ -1,0 +1,90 @@
+name: CI
+
+# Quality gates + tests + a production build on every push to main and every PR.
+# Mirrors the local `npm run quality` + `vitest` + `next build` so a green CI
+# means the branch is releasable. GitLab runs the same steps (see .gitlab-ci.yml).
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch: {}
+
+# One run per ref; a new push cancels the previous in-progress run.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  NODE_VERSION: "22"
+  NEXT_TELEMETRY_DISABLED: "1"
+  HUSKY: "0" # never install git hooks in CI
+
+jobs:
+  quality:
+    name: Quality gates
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci
+      # type-check, lint, validate (architecture), next-auth-pin, leaked-secrets,
+      # codegen-flag, i18n-parity, i18n-usage, rsc-boundaries, swagger-drift, color-fn
+      - run: npm run quality
+      - name: Dependency audit (high+ severity)
+        run: npm audit --omit=dev --audit-level=high
+        continue-on-error: true
+
+  test:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci
+      - run: npx vitest run
+
+  build:
+    name: Production build
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    needs: [quality, test]
+    env:
+      NODE_ENV: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci
+      # `quality` already ran in its own job — build only (init-entities + next build),
+      # then re-check leaked secrets against the produced client bundle.
+      - run: npm run init-entities
+      - run: npx next build --webpack
+      - run: npm run check:leaked-secrets
+      - name: Bundle-size budget
+        run: npm run check:bundle-budget
+        continue-on-error: true
+      # Assemble the portable, OS-agnostic publish bundle (standalone server +
+      # static + public + start scripts for Linux/Windows) and upload it.
+      - run: node scripts/publish.mjs --skip-build
+      - name: Upload publish bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: publish-bundle
+          path: dist/*.tar.gz
+          retention-days: 14
+          if-no-files-found: error

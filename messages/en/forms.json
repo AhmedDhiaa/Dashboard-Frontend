@@ -1,0 +1,16 @@
+{
+    "placeholders": {
+        "select": "Select {field}",
+        "search": "Search {field}..."
+    },
+    "sections": {
+        "additional_info": "Additional Information"
+    },
+    "code": "Code",
+    "foreignName": "Foreign Name",
+    "note": "Unit Notes",
+    "baseRef": "Base Reference",
+    "baseEntityType": "Base Entity Type",
+    "title": "Notification Title",
+    "body": "Notification Body"
+}

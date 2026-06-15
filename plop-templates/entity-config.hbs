@@ -1,0 +1,115 @@
+/**
+ * {{pascalCase name}} Entity Configuration
+ */
+
+import { Box } from "lucide-react"
+import type { EntityConfig } from "@/core/entities/config-types"
+import {
+  get{{pascalCase name}}CreateSchema,
+  get{{pascalCase name}}UpdateSchema,
+  type {{pascalCase name}}FormValues,
+} from "./{{kebabCase name}}.schema"
+{{#if withAudit}}
+import { createPrimaryInfoSection, createMetadataSection } from "@/core/crud/components/BaseDetailRenderer"
+{{else}}
+import { createPrimaryInfoSection } from "@/core/crud/components/BaseDetailRenderer"
+{{/if}}
+import { {{camelCase name}}Service, type {{pascalCase name}} } from "./{{kebabCase name}}.service"
+
+export const {{camelCase name}}Config: EntityConfig<{{pascalCase name}}, {{pascalCase name}}FormValues> = {
+  entityName: "{{entityKey}}",
+  singularName: "{{name}}",
+  pluralName: "{{namePlural}}",
+  icon: Box,
+  service: {{camelCase name}}Service,
+  permissionKey: "{{permissionKey}}",
+  basePath: "{{routePath}}",
+
+  listColumns: [
+    { field: "code", type: "badge-code" },
+    { field: "name", type: "text-primary" },
+    {{#if bilingual}}
+    { field: "foreignName", type: "text-arabic" },
+    {{/if}}
+    {{#if withStatus}}
+    { field: "isActive", type: "boolean" },
+    {{/if}}
+    { field: "isSystem", type: "boolean" },
+    {{#if withAudit}}
+    { field: "creationTime", type: "date" },
+    {{/if}}
+  ],
+
+  defaultSort: { field: "creationTime", direction: "desc" },
+  searchFields: ["code", "name"{{#if bilingual}}, "foreignName"{{/if}}],
+  defaultPageSize: 10,
+
+  detailSections: [
+    createPrimaryInfoSection([{ name: "isSystem", type: "boolean-system", labelKey: "pages.isSystem" }]),
+    {{#if withAudit}}
+    createMetadataSection(),
+    {{/if}}
+  ],
+
+  formFields: {
+    code: {
+      type: "text",
+      labelKey: "pages.code",
+      required: true,
+      validation: { minLength: 1, maxLength: 20 },
+    },
+    name: { type: "text", labelKey: "pages.name", required: true, validation: { minLength: 1, maxLength: 100 } },
+    {{#if bilingual}}
+    foreignName: {
+      type: "text",
+      labelKey: "pages.foreignName",
+      required: true,
+      validation: { minLength: 1, maxLength: 100 },
+    },
+    {{/if}}
+    {{#if withStatus}}
+    isActive: { type: "boolean", labelKey: "pages.isActive" },
+    {{/if}}
+    note: { type: "textarea", labelKey: "pages.note", required: false, validation: { maxLength: 500 } },
+    concurrencyStamp: { type: "text", hidden: true },
+  },
+
+  formFieldOrder: [
+    "code",
+    "name",
+    {{#if bilingual}}"foreignName",{{/if}}
+    {{#if withStatus}}"isActive",{{/if}}
+    "note",
+  ],
+  excludeFields: ["concurrencyStamp"],
+  createSchema: get{{pascalCase name}}CreateSchema,
+  updateSchema: get{{pascalCase name}}UpdateSchema,
+
+  defaultFormValues: {
+    code: "",
+    name: "",
+    {{#if bilingual}}foreignName: "",{{/if}}
+    {{#if withStatus}}isActive: true,{{/if}}
+    note: "",
+  },
+
+  entityToFormData: (entity: {{pascalCase name}}) => ({
+    code: entity.code,
+    name: entity.name,
+    {{#if bilingual}}foreignName: entity.foreignName,{{/if}}
+    {{#if withStatus}}isActive: entity.isActive,{{/if}}
+    note: entity.note || "",
+    concurrencyStamp: entity.concurrencyStamp,
+  }),
+
+  translations: {
+    listTitle: "pages.{{entityKey}}.title",
+    listDescription: "pages.{{entityKey}}.description",
+    detailTitle: "pages.{{entityKey}}.detail_title",
+    createTitle: "pages.{{entityKey}}.create_title",
+    editTitle: "pages.{{entityKey}}.edit_title",
+    searchPlaceholder: "pages.{{entityKey}}.searchPlaceholder",
+  },
+
+  features: { create: true, edit: true, delete: true, export: true },
+}

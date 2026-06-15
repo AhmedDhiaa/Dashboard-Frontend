@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+  <meta charset="UTF-8">
+  <title>How to Delete Your Account | Acme</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #f4f8f6;
+      --card: #ffffff;
+      --text: #1f2d2a;
+      --muted: #5f6f6b;
+      --brand: #1d6b55;
+      --border: #e3ebe7;
+      --shadow: 0 10px 30px rgba(0,0,0,.06);
+      --warning: #c0392b;
+    }
+
+    body.dark {
+      --bg: #071b14;
+      --card: rgba(255,255,255,.08);
+      --text: rgba(255,255,255,.92);
+      --muted: rgba(255,255,255,.72);
+      --brand: #29a37c;
+      --border: rgba(255,255,255,.14);
+      --shadow: 0 18px 50px rgba(0,0,0,.35);
+      --warning: #e74c3c;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: "Inter", sans-serif;
+      transition: background .35s ease, color .35s ease, border .35s ease;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.8;
+    }
+
+    .header {
+      background: var(--brand);
+      color: #fff;
+      padding: 18px 20px;
+      font-size: 22px;
+      font-weight: 700;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .switch {
+      position: absolute;
+      right: 20px;
+      width: 52px;
+      height: 28px;
+    }
+
+    .switch input {
+      display: none;
+    }
+
+    .slider {
+      position: absolute;
+      inset: 0;
+      cursor: pointer;
+      background: rgba(255,255,255,.35);
+      border-radius: 50px;
+    }
+
+    .slider:before {
+      content: "";
+      position: absolute;
+      height: 22px;
+      width: 22px;
+      left: 3px;
+      top: 3px;
+      background: #fff;
+      border-radius: 50%;
+      transition: .3s;
+    }
+
+    input:checked + .slider {
+      background: rgba(0,0,0,.35);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(24px);
+    }
+
+    .wrapper {
+      max-width: 900px;
+      margin: 30px auto;
+      padding: 0 16px;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 26px 24px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+    }
+
+    h2 {
+      color: var(--brand);
+      font-size: 18px;
+      margin-top: 26px;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    p, li {
+      color: var(--muted);
+      font-size: 15.5px;
+    }
+
+    ul {
+      padding-left: 18px;
+      margin-top: 6px;
+    }
+
+    .warning {
+      border-left: 4px solid var(--warning);
+      background: rgba(192,57,43,.06);
+      padding: 14px 16px;
+      border-radius: 8px;
+      margin-top: 16px;
+    }
+
+    .warning strong {
+      color: var(--warning);
+    }
+
+    .footer {
+      text-align: center;
+      font-size: 13.5px;
+      color: var(--muted);
+      margin: 26px 0 16px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="header">
+  How to Delete Your Account
+  <label class="switch" aria-label="Toggle dark mode">
+    <input type="checkbox" id="themeToggle">
+    <span class="slider"></span>
+  </label>
+</div>
+
+<div class="wrapper">
+<div class="card">
+
+<p>
+<strong>Acme App</strong><br>
+Provided by Peace Bird Land for General Contracting & Trading LLC<br>
+Support Email: ali.majeed@peace-bird.com
+</p>
+
+<h2>Account Deletion</h2>
+<p>
+You can permanently delete your Acme account directly from within the mobile application.
+This process is simple and can be completed in just a few steps.
+</p>
+
+<h2>Step-by-Step Instructions</h2>
+<ul>
+  <li>Open the Acme mobile app on your device.</li>
+  <li>Navigate to <strong>Settings</strong> (usually found in the menu or profile section).</li>
+  <li>Scroll down and select <strong>"Delete Account"</strong>.</li>
+  <li>Read the confirmation message carefully.</li>
+  <li>Tap <strong>"Confirm"</strong> to permanently delete your account.</li>
+</ul>
+
+<div class="warning">
+  <strong>⚠️ Important Information</strong>
+  <ul>
+    <li>Account deletion is permanent and cannot be reversed.</li>
+    <li>All your personal data will be permanently removed from our servers.</li>
+    <li>This action cannot be undone once completed.</li>
+    <li>You will lose access to all app features and any saved content.</li>
+  </ul>
+</div>
+
+<h2>Need Help?</h2>
+<p>
+If you encounter any issues with the account deletion process or have questions,
+please contact our support team:
+</p>
+
+<p>
+<strong>Email:</strong> ali.majeed@peace-bird.com<br>
+Account deletion is processed immediately once confirmed inside the app.
+</p>
+
+<p>
+This page complies with <strong>Google Play’s account deletion policy requirements</strong>.
+</p>
+
+</div>
+
+<div class="footer">
+  © 2026 Peace Bird Land. All rights reserved.
+</div>
+</div>
+
+<script>
+const toggle = document.getElementById("themeToggle");
+toggle.addEventListener("change", () => {
+  document.body.classList.toggle("dark");
+});
+</script>
+
+</body>
+</html>

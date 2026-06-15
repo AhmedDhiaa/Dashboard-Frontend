@@ -1,0 +1,91 @@
+{
+    "page": {
+        "title": "All Components",
+        "subtitle": "Every primitive, form field, layout, widget, and skeleton in one scrollable QA surface.",
+        "dev_only": "Dev Only"
+    },
+    "nav": {
+        "heading": "Showcase sections",
+        "open": "Open showcase navigation",
+        "sections": "Sections"
+    },
+    "sections": {
+        "primitives": {
+            "label": "Primitives",
+            "title": "Primitives",
+            "desc": "Buttons, badges, cards, dialogs, dropdowns, avatars, tabs, tooltips, accordion, popover, sheet, command, breadcrumbs, separator, calendar, icon-wrapper, text-gradient, stat-card."
+        },
+        "form-fields": {
+            "label": "Form Fields",
+            "title": "Form Fields",
+            "desc": "Every input/select/checkbox/radio/switch/slider variant wired into a single react-hook-form + zod-validated form."
+        },
+        "form-layouts": {
+            "label": "Form Layouts",
+            "title": "Form Layouts",
+            "desc": "The four config-selectable form layouts: Grid, Tabs, Sectioned, Split."
+        },
+        "dynamic-list": {
+            "label": "Dynamic List",
+            "title": "Dynamic List",
+            "desc": "DynamicListField — the add/remove/edit row editor for line-items inside a form."
+        },
+        "crud-views": {
+            "label": "CRUD Views",
+            "title": "CRUD Views",
+            "desc": "The config-driven list as a data table OR a generic card grid, toggled live — both views come free from an entity's config."
+        },
+        "data-display": {
+            "label": "Data Display",
+            "title": "Data Display",
+            "desc": "Avatar, Badge, EnumBadge, StatCard, table primitive, DashboardCard."
+        },
+        "data-table": {
+            "label": "Data Table",
+            "title": "Data Table",
+            "desc": "The data table — 10 mock orders with every column-type renderer exercised."
+        },
+        "feedback": {
+            "label": "Feedback",
+            "title": "Feedback",
+            "desc": "Alert variants, Spinner, LoadingState, ConfirmDialog, Sheet drawers, FilterDrawer, Skeleton, ErrorBoundary demo."
+        },
+        "skeletons": {
+            "label": "Skeletons",
+            "title": "Skeletons",
+            "desc": "DataTableSkeleton, DetailSkeleton, FormSkeleton, StatCardSkeleton."
+        },
+        "layout": {
+            "label": "Layout",
+            "title": "Layout",
+            "desc": "PageHeader variants — badge, actions, breadcrumbs — plus a fenced Sidebar/Header preview."
+        },
+        "application": {
+            "label": "Application",
+            "title": "Application",
+            "desc": "ImageUploader, FileUploader, file preview, image crop dialog, FilterMultiSelectField."
+        },
+        "widgets": {
+            "label": "Widgets",
+            "title": "Widgets",
+            "desc": "WidgetRenderer — one example per category (kpi / chart / table / alert / map placeholder)."
+        },
+        "map-tracking": {
+            "label": "Maps & Tracking",
+            "title": "Maps, coordinates & tracking",
+            "desc": "The geo stack — the coordinates/boundary field, the map widget, and live vehicle tracking — previewed inline."
+        }
+    },
+    "map": {
+        "preview_label": "Live preview",
+        "provider_hint": "The same map, two providers — switch freely.",
+        "provider_free": "Free · OpenStreetMap",
+        "provider_google": "Google Maps",
+        "google_needs_key": "Google Maps needs an API key (NEXT_PUBLIC_GOOGLE_MAPS_API_KEY). The free OpenStreetMap provider renders with no key at all.",
+        "boundary_title": "Coordinates / boundary field",
+        "boundary_body": "Drop a point or draw a polygon on the map; the geometry is stored on the entity. Used by the Example UI entity.",
+        "boundary_cta": "Open Example UI",
+        "tracking_title": "Live tracking",
+        "tracking_body": "Vehicles stream their position over the live socket, so markers move in real time on the operations map — no page reload."
+    }
+}

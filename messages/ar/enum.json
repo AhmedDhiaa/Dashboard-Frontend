@@ -1,0 +1,19 @@
+{
+    "filters": {
+        "title": "الفلاتر",
+        "title_with_entity": "{entity} - الفلاتر",
+        "status_label": "الحالة",
+        "type_label": "النوع",
+        "from_date": "من تاريخ",
+        "to_date": "إلى تاريخ",
+        "search": "بحث",
+        "advanced_title": "تصفية متقدمة",
+        "advanced_description": "استخدم الحقول أدناه لتصفية النتائج بشكل أكثر دقة",
+        "apply_button": "تطبيق التصفية",
+        "clear_button": "مسح التصفية",
+        "active_filters": "توجد {count} فلاتر نشطة",
+        "quick_search_title": "بحث سريع",
+        "quick_search_description": "ابحث عن طريق الكلمات المفتاحية",
+        "search_placeholder": "ابحث هنا..."
+    }
+}

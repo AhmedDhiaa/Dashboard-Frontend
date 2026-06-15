@@ -1,0 +1,19 @@
+{
+    "filters": {
+        "title": "Filters",
+        "title_with_entity": "{entity} - Filters",
+        "status_label": "Status",
+        "type_label": "Type",
+        "from_date": "From Date",
+        "to_date": "To Date",
+        "search": "Search",
+        "advanced_title": "Advanced Filters",
+        "advanced_description": "Use the fields below to filter the results more accurately",
+        "apply_button": "Apply Filters",
+        "clear_button": "Clear Filters",
+        "active_filters": "{count} active filters",
+        "quick_search_title": "Quick Search",
+        "quick_search_description": "Search by keywords",
+        "search_placeholder": "Search here..."
+    }
+}

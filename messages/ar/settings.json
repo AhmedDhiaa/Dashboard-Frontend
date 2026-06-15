@@ -1,0 +1,55 @@
+{
+    "description": "إدارة تفضيلات التطبيق وإعدادات الحساب",
+    "sections": {
+        "appearance": {
+            "title": "المظهر"
+        },
+        "language": {
+            "title": "اللغة والمنطقة"
+        }
+    },
+    "profile": {
+        "title": "إعدادات الملف الشخصي",
+        "description": "إدارة معلوماتك الشخصية وتفضيلاتك",
+        "save_success": "تم تحديث الملف الشخصي بنجاح"
+    },
+    "security": {
+        "title": "إعدادات الأمان",
+        "description": "إدارة كلمة المرور وأمان الحساب",
+        "password_success": "تم تغيير كلمة المرور بنجاح"
+    },
+    "theme": {
+        "appearance_description": "تخصيص شكل التطبيق",
+        "theme_label": "السمة",
+        "color_scheme_label": "نظام الألوان",
+        "font_size_title": "حجم الخط",
+        "font_size_description": "ضبط حجم النص للقراءة",
+        "themes": {
+            "light": {
+                "description": "سمة فاتحة كلاسيكية"
+            },
+            "dark": {
+                "description": "سمة داكنة حديثة"
+            },
+            "system": {
+                "description": "مطابقة تفضيلات النظام"
+            }
+        },
+        "colors": {
+            "blue": "أزرق",
+            "indigo": "نيلي",
+            "purple": "أرجواني",
+            "pink": "وردي",
+            "green": "أخضر"
+        }
+    },
+    "language": {
+        "page_description": "تخصيص إعدادات اللغة والمنطقة",
+        "back_to_settings": "العودة إلى الإعدادات",
+        "language_label": "اللغة",
+        "region_label": "المنطقة",
+        "refresh_note_label": "ملاحظة:",
+        "refresh_note_body": "سيتم تطبيق تغييرات اللغة عند تحديث الصفحة التالي."
+    },
+    "title": "الإعدادات"
+}

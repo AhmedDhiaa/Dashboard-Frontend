@@ -1,0 +1,16 @@
+{
+    "title": "Dashboard",
+    "welcome": "Welcome to Acme",
+    "overview": "Overview",
+    "revenue": "Sale Orders",
+    "categories": {
+        "tickets": "Support Tickets"
+    },
+    "entities": "Entities",
+    "total": "Total",
+    "count": "Count",
+    "this_month": "This Month",
+    "this_week": "This Week",
+    "today": "Today",
+    "of": "of"
+}

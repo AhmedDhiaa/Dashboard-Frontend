@@ -1,0 +1,55 @@
+{
+    "description": "Manage your application preferences and account settings",
+    "sections": {
+        "appearance": {
+            "title": "Appearance"
+        },
+        "language": {
+            "title": "Language & Region"
+        }
+    },
+    "profile": {
+        "title": "Profile Settings",
+        "description": "Manage your personal information and preferences",
+        "save_success": "Profile updated successfully"
+    },
+    "security": {
+        "title": "Security Settings",
+        "description": "Manage your password and account security",
+        "password_success": "Password changed successfully"
+    },
+    "theme": {
+        "appearance_description": "Customize how the application looks",
+        "theme_label": "Theme",
+        "color_scheme_label": "Color Scheme",
+        "font_size_title": "Font Size",
+        "font_size_description": "Adjust text size for readability",
+        "themes": {
+            "light": {
+                "description": "Classic light theme"
+            },
+            "dark": {
+                "description": "Modern dark theme"
+            },
+            "system": {
+                "description": "Match system preference"
+            }
+        },
+        "colors": {
+            "blue": "Blue",
+            "indigo": "Indigo",
+            "purple": "Purple",
+            "pink": "Pink",
+            "green": "Green"
+        }
+    },
+    "language": {
+        "page_description": "Customize language and regional settings",
+        "back_to_settings": "Back to Settings",
+        "language_label": "Language",
+        "region_label": "Region",
+        "refresh_note_label": "Note:",
+        "refresh_note_body": "Language changes will be applied on next page refresh."
+    },
+    "title": "Settings"
+}

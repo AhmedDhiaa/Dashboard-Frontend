@@ -1,0 +1,11 @@
+{
+  "_policy": "Per-category caps for dead-code (knip). Mirrors the architecture-baseline pattern: today's counts are recorded as the ceiling. CI fails if any category grows. Drain by fixing real dead code AND lowering the corresponding cap in the same PR — both changes show up in review. Never raise a cap; if you genuinely need to (e.g., a new entry-point that knip can't infer), add the entry to knip.json's `entry`/`ignore` config instead.",
+  "files": 0,
+  "exports": 0,
+  "types": 0,
+  "duplicates": 0,
+  "dependencies": 0,
+  "devDependencies": 0,
+  "unlisted": 0,
+  "binaries": 1
+}

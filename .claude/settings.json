@@ -1,0 +1,38 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node _probe-axios.mjs)",
+      "Bash(npx next *)",
+      "Bash(node scripts/check-bundle-budget.mjs)",
+      "Bash(chmod +x /tmp/measure-chunks.sh)",
+      "Bash(/tmp/measure-chunks.sh)",
+      "Bash(chmod +x /tmp/measure-fm.sh)",
+      "Bash(/tmp/measure-fm.sh)",
+      "Bash(git checkout *)",
+      "Bash(grep -nC 1 \"DataTableProps\" src/ui/data-table/components/DataTable.tsx)",
+      "Bash(xargs grep *)",
+      "Bash(grep -nA 12 \"^export function useT\" src/shared/config/i18n.ts)",
+      "Bash(npx knip *)",
+      "Bash(node -e ' *)",
+      "Bash(echo \"---exit=$?---\")",
+      "Bash(echo \"exit=$?\")",
+      "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('package.json', 'utf8'\\)\\); console.log\\('valid JSON'\\)\")",
+      "Bash(echo \"---EXIT: $?\")",
+      "Bash(node scripts/check-knip.mjs)",
+      "Bash(echo \"EXIT: $?\")",
+      "Bash(npm ls *)",
+      "Bash(grep -E \"^\\\\\\\\S.*\\\\\\\\.\\(tsx?|jsx?\\)$\")",
+      "Bash(grep -E \"^\\\\\\\\S.*\\\\\\\\.tsx?$\")",
+      "Bash(node scripts/check-prerelease-deps.mjs)",
+      "Bash(npm test *)",
+      "Bash(node scripts/check-leaked-secrets.mjs)",
+      "Bash(awk '/^[A-Z]:.*\\\\.tsx?$/{file=$0; next} /no-untranslated-strings/{print file}')",
+      "Bash(awk '/^Unused files/{f=1; next} /^[A-Z]/{f=0} f{print}')",
+      "Bash(grep -E \"^\\\\.env$|^\\\\.env\\\\b\" .gitignore)",
+      "Bash(node -e \"console.log\\(require\\('crypto'\\).randomBytes\\(32\\).toString\\('base64'\\)\\)\")"
+    ],
+    "additionalDirectories": [
+      "\\tmp"
+    ]
+  }
+}

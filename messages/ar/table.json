@@ -1,0 +1,26 @@
+{
+    "export_excel": "تصدير إكسل",
+    "columns": "الأعمدة",
+    "density": "كثافة الصفوف",
+    "density_compact": "مضغوط",
+    "density_normal": "عادي",
+    "density_comfortable": "مريح",
+    "switch_to_direct": "التبديل إلى الإجراءات المباشرة",
+    "switch_to_menu": "التبديل إلى القائمة",
+    "rows_per_page": "الصفوف لكل صفحة",
+    "page": "صفحة",
+    "of": "من",
+    "rows_selected": "صف محدد",
+    "showing": "عرض",
+    "results": "نتيجة",
+    "a11y": {
+        "pagination_nav": "تنقل الصفحات",
+        "page_numbers": "أرقام الصفحات",
+        "first_page": "الذهاب إلى الصفحة الأولى",
+        "previous_page": "الذهاب إلى الصفحة السابقة",
+        "current_page": "رقم الصفحة الحالية",
+        "next_page": "الذهاب إلى الصفحة التالية",
+        "last_page": "الذهاب إلى الصفحة الأخيرة"
+    },
+    "loading": "جاري التحميل..."
+}

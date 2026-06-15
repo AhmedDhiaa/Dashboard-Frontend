@@ -1,0 +1,42 @@
+# Normalize line endings across platforms.
+#
+# `text=auto eol=lf` tells git: auto-detect text vs. binary, and for any text
+# file, force LF in BOTH the working tree and the index — overriding each
+# developer's `core.autocrlf` setting. This is what makes the line-ending
+# rule a property of the repo, not the workstation.
+* text=auto eol=lf
+
+# Windows scripts are the exception — cmd.exe is fine with LF on modern
+# Windows but most editors and lint tools still emit CRLF for these, and
+# some legacy contexts (older PowerShell, batch wrappers) genuinely need it.
+# Keeping them as CRLF avoids surprise breakage.
+*.bat   text eol=crlf
+*.cmd   text eol=crlf
+*.ps1   text eol=crlf
+
+# Explicit binary declarations. `text=auto` already protects most of these
+# via auto-detection, but spelling them out documents intent and removes any
+# ambiguity for unusual file shapes (e.g. a corrupted UTF-16 BOM that gets
+# misclassified as text).
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.webp  binary
+*.avif  binary
+*.ico   binary
+*.svg   text
+*.pdf   binary
+*.woff  binary
+*.woff2 binary
+*.ttf   binary
+*.otf   binary
+*.eot   binary
+*.zip   binary
+*.tar   binary
+*.tar.gz binary
+*.gz    binary
+*.mp4   binary
+*.mp3   binary
+*.wav   binary
+*.webm  binary

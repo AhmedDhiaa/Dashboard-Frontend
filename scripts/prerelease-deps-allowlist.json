@@ -1,0 +1,12 @@
+{
+  "_policy": "Explicit allowlist for prerelease dependencies (alpha/beta/rc/canary/etc.). The default policy is `no betas` — beta semver ranges ship breaking changes between revisions and have caused production incidents. To approve a prerelease dep, add an entry below with a real reason and a real approver, and mention both in the PR description. Removal is automatic: when the package upgrades to stable, drop the entry. Pinning rationale and rollback paths belong in the per-package guard scripts (e.g., scripts/check-next-auth-pin.mjs), not here — this file just records the green light.",
+  "approved": [
+    {
+      "package": "next-auth",
+      "version": "5.0.0-beta.30",
+      "reason": "v5 stable not yet on npm. Pinned exact (no caret) and verified in lockstep by scripts/check-next-auth-pin.mjs. Replace with a stable v5 release and delete the entry when one ships.",
+      "approver": "team-lead",
+      "added": "2026-01-15"
+    }
+  ]
+}

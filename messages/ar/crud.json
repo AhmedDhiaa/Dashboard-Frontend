@@ -1,0 +1,25 @@
+{
+    "actions": {
+        "title": "إجراءات",
+        "add": "إضافة جديد",
+        "clear_selection": "مسح التحديد",
+        "add_short": "إضافة"
+    },
+    "messages": {
+        "success_create": "تم الإنشاء بنجاح",
+        "success_update": "تم التحديث بنجاح",
+        "success_delete": "تم الحذف بنجاح",
+        "confirm_delete_message": "هل أنت متأكد من الحذف؟ لا يمكن التراجع عن هذا الإجراء.",
+        "no_data": "لا توجد بيانات",
+        "no_data_description": "جرب تعديل عوامل التصفية أو إنشاء عناصر جديدة للبدء.",
+        "no_results": "لا توجد نتائج",
+        "no_results_description": "لا توجد عناصر تطابق عوامل التصفية أو البحث الحالي.",
+        "clear_filters": "مسح عوامل التصفية",
+        "network_error_title": "تعذّر تحميل البيانات",
+        "network_error_description": "تحقق من اتصالك وأعد المحاولة.",
+        "retry": "إعادة المحاولة"
+    },
+    "tree": {
+        "no_items_in_hierarchy": "لا توجد عناصر في التسلسل"
+    }
+}

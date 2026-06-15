@@ -1,0 +1,52 @@
+{
+    "entity_overrides": {
+        "panel": {
+            "title": "System entities",
+            "description": "Every entity registered in the runtime registry. Edit display, list behavior, features, routing, and per-field flags. Changes save as JSON overrides; the source code is untouched.",
+            "search_placeholder": "Filter by name…",
+            "empty": "No entities match.",
+            "col_entity": "Entity",
+            "col_singular": "Singular",
+            "col_plural": "Plural",
+            "col_page_size": "Page size",
+            "col_base_path": "Base path",
+            "col_actions": "Actions",
+            "overridden": "Overridden",
+            "source": "Source",
+            "edit_btn": "Edit overrides",
+            "reset_btn": "Reset to source",
+            "col_status": "Status"
+        },
+        "editor": {
+            "title": "Edit override — {name}",
+            "description": "Changes are saved on top of the source config. Reset to revert to defaults.",
+            "section_display": "Display",
+            "section_list": "List behavior",
+            "section_features": "Features",
+            "section_routing": "Routing",
+            "section_form_fields": "Form fields",
+            "singular": "Singular name",
+            "plural": "Plural name",
+            "page_size": "Default page size",
+            "sort_field": "Default sort field",
+            "sort_direction": "Sort direction",
+            "permission_key": "Permission key",
+            "no_fields": "This entity has no form fields registered.",
+            "col_required": "Required",
+            "col_disabled": "Disabled",
+            "col_hidden": "Hidden",
+            "col_label": "Label",
+            "move_up": "Move up",
+            "move_down": "Move down",
+            "reset_btn": "Reset to source",
+            "save_btn": "Save",
+            "asc": "Ascending",
+            "desc": "Descending",
+            "base_path": "Base path"
+        },
+        "save_done": "Override saved.",
+        "reset_done": "Override reset.",
+        "invalid": "The override is invalid.",
+        "confirm_reset": "Reset all overrides for \"{name}\"? The entity will revert to its source config."
+    }
+}

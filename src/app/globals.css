@@ -1,0 +1,922 @@
+@import 'tailwindcss';
+
+@custom-variant dark (&:is(.dark *));
+
+/* ============================================================================
+   DESIGN SYSTEM 2.0 - ENHANCED GLOBALS
+   Modern design tokens with OKLCH color science, GPU-accelerated animations,
+   and performance-optimized utilities.
+   ============================================================================ */
+
+:root {
+  /* ========================================
+     DYNAMIC ADJUSTMENT TOKENS
+     -------------------------------------------
+     --radius: 0.625rem (10 px) — the single canonical corner radius. The
+       primitives (Button, Input, Select, Card) all map to multiples of
+       this: button-sm uses 0.5×, button-default uses 0.8×, card-default
+       uses 1.2×. Tightened from 0.75rem (which pushed cards toward
+       "marketing tile").
+     --glass-intensity: kept low. Only sticky-floating layers (table
+       header, sticky page header on scroll, dropdown menus) use blur;
+       solid surfaces below stay solid for legibility.
+     --shadow-strength: 0.06 (was 0.08). Lighter shadows on cards/tables
+       so the page reads "enterprise" not "floating glass pillows".
+     ======================================== */
+  /* Sleek/Linear-style refinement: 8px base radius (was 10px) for crisper
+     corners, lighter shadows. Each primitive derives from --radius. */
+  --radius: 0.5rem;
+  --glass-intensity: 0.12;
+  --spacing-unit: 1rem;
+  --font-scale: 1;
+  --shadow-strength: 0.05;
+
+  /* Layout Constants */
+  --header-height: 4rem;
+  --sidebar-width: 16rem;
+  --sidebar-collapsed-width: 4rem;
+  --max-content-width: 80rem;
+  --footer-height: 4rem;
+
+  /* Animation Multipliers */
+  --anim-duration-scale: 1;
+
+  /* ========================================
+     COLOR SYSTEM — single-hue family
+     -------------------------------------------
+     OKLCH gives perceptually uniform contrast, so the same hue at
+     different lightness values reads as the same "brand colour" to the
+     eye. The light and dark themes use the SAME hue (220 = blue-teal),
+     just inverted in lightness. The previous dark mode shifted to a
+     different hue (250 = blue-indigo) which read as "different brand"
+     when toggling — fixed.
+     -------------------------------------------
+     Neutrals are warm-neutral (hue 240, very low chroma) — slightly more
+     paper-like than the previous cool-grey 240.
+     ======================================== */
+
+  /* Page background + foreground */
+  --background: oklch(0.985 0.003 240);
+  --foreground: oklch(0.20 0.015 240);
+
+  /* Surfaces above the page (cards, popovers, dialogs). Slightly lifted
+     from --background so the elevation reads even without shadows. */
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.20 0.015 240);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.20 0.015 240);
+
+  /* Brand — single hue family at 220 (cool blue-teal). The whole brand
+     palette derives from this hue: primary is the headliner, accent is
+     a shifted variant for highlights, secondary is a neutral with a hint. */
+  --primary: oklch(0.52 0.14 220);
+  --primary-foreground: oklch(0.99 0.002 220);
+  --secondary: oklch(0.94 0.012 220);
+  --secondary-foreground: oklch(0.25 0.02 220);
+  --accent: oklch(0.65 0.15 200);
+  --accent-foreground: oklch(0.99 0.002 200);
+
+  /* Semantic colours — distinct hues each, chosen for WCAG AA contrast
+     against their own *-foreground at 4.5:1 minimum on small text. */
+  --success: oklch(0.58 0.16 150);
+  --success-foreground: oklch(0.99 0.002 150);
+  --warning: oklch(0.72 0.16 70);
+  --warning-foreground: oklch(0.22 0.025 70);
+  --destructive: oklch(0.55 0.22 25);
+  --destructive-foreground: oklch(0.99 0.002 25);
+  --info: oklch(0.58 0.14 245);
+  --info-foreground: oklch(0.99 0.002 245);
+
+  /* Greyscale ladder — perceptually-even steps from background to fg */
+  --muted: oklch(0.965 0.005 240);
+  --muted-foreground: oklch(0.50 0.018 240);
+  --border: oklch(0.91 0.008 240);
+  --input: oklch(0.97 0.005 240);
+  --ring: oklch(0.52 0.14 220);
+
+  /* Sidebar — anchored to the page background so it doesn't feel
+     "stuck on top" of the content area. Slightly cooler tint than the
+     page so the boundary remains legible without a heavy border. */
+  --sidebar: oklch(0.975 0.004 240);
+  --sidebar-foreground: oklch(0.28 0.018 240);
+  --sidebar-primary: oklch(0.52 0.14 220);
+  --sidebar-primary-foreground: oklch(0.99 0.002 220);
+  --sidebar-accent: oklch(0.93 0.012 220);
+  --sidebar-accent-foreground: oklch(0.30 0.025 220);
+  --sidebar-border: oklch(0.91 0.008 240);
+  --sidebar-ring: oklch(0.52 0.14 220);
+
+  /* Premium accent — used for the runtime-builder generate CTA and the
+     widget marketplace; a violet-shifted hue so it reads as "special"
+     against the rest of the cool brand palette. */
+  --premium: oklch(0.55 0.22 285);
+  --premium-foreground: oklch(0.99 0.002 285);
+
+  /* Chart palette — 5 perceptually-distinct hues with the brand primary
+     as chart-1 (so the dashboard's first chart aligns with the brand). */
+  --chart-1: oklch(0.55 0.14 220);
+  --chart-2: oklch(0.66 0.15 165);
+  --chart-3: oklch(0.70 0.16 70);
+  --chart-4: oklch(0.60 0.20 25);
+  --chart-5: oklch(0.55 0.22 285);
+
+  /* ========================================
+     COMPONENT CUSTOMIZATION VARIABLES
+     ======================================== */
+
+  /* Button Component */
+  --button-radius: 0.5rem;
+  --button-padding-x: 1rem;
+  --button-padding-y: 0.5rem;
+  --button-font-size: 0.875rem;
+  --button-font-weight: 500;
+
+  /* Input Component */
+  --input-radius: 0.5rem;
+  --input-padding-x: 0.75rem;
+  --input-height: 2.5rem;
+  --input-font-size: 0.875rem;
+  --input-border-width: 1px;
+
+  /* Card Component — denser padding for a more information-rich, pro feel. */
+  --card-radius: 0.625rem;
+  --card-padding: 1.25rem;
+  --card-border-width: 1px;
+
+  /* Badge Component */
+  --badge-radius: 0.375rem;
+  --badge-padding-x: 0.625rem;
+  --badge-font-size: 0.75rem;
+
+  /* Avatar Component */
+  --avatar-radius: 9999px;
+  --avatar-size: 2.5rem;
+
+  /* Dialog Component */
+  --dialog-radius: 0.625rem;
+  --dialog-padding: 1.5rem;
+  --dialog-max-width: 32rem;
+
+  /* Tabs Component */
+  --tabs-radius: 0.5rem;
+  --tabs-padding: 0.75rem;
+}
+
+/* ========================================
+   DARK MODE
+   -------------------------------------------
+   Same hue family as light (220), just inverted in lightness. Toggling
+   light/dark feels like dimming the room, not switching brand.
+   -------------------------------------------
+   Neutrals follow the same warm-neutral 240 hue.
+   Each surface step from background → card → popover → input is +0.02
+   lightness, giving the eye a clear elevation ladder without shadows.
+   ======================================== */
+.dark {
+  /* Page background: near-black with a hint of cool. Pure #000 reads as
+     OLED-cinematic but creates a sharp boundary with content cards;
+     0.13 lightness gives a soft elevation step. */
+  --background: oklch(0.135 0.012 240);
+  --foreground: oklch(0.96 0.004 240);
+
+  --card: oklch(0.175 0.014 240);
+  --card-foreground: oklch(0.96 0.004 240);
+  --popover: oklch(0.185 0.014 240);
+  --popover-foreground: oklch(0.96 0.004 240);
+
+  /* Brand — same 220 hue as light, shifted up in lightness so the
+     contrast against the dark background hits AA. Toggling
+     light↔dark keeps the brand recognisable. */
+  --primary: oklch(0.68 0.15 220);
+  --primary-foreground: oklch(0.13 0.012 240);
+  --secondary: oklch(0.26 0.018 220);
+  --secondary-foreground: oklch(0.95 0.005 220);
+  --accent: oklch(0.72 0.15 200);
+  --accent-foreground: oklch(0.13 0.012 240);
+
+  /* Semantic — bumped lightness for AA contrast against the dark
+     background. Hue lines up with light-mode counterparts. */
+  --success: oklch(0.70 0.16 150);
+  --success-foreground: oklch(0.13 0.012 150);
+  --warning: oklch(0.78 0.14 70);
+  --warning-foreground: oklch(0.16 0.02 70);
+  --destructive: oklch(0.65 0.22 25);
+  --destructive-foreground: oklch(0.99 0.005 25);
+  --info: oklch(0.70 0.14 245);
+  --info-foreground: oklch(0.13 0.012 245);
+
+  /* Greyscale ladder. --muted sits BETWEEN card and background so a
+     muted-surface section stands apart from both the card it floats
+     over and the page beneath. */
+  --muted: oklch(0.22 0.012 240);
+  --muted-foreground: oklch(0.66 0.018 240);
+  --border: oklch(0.27 0.016 240);
+  --input: oklch(0.20 0.014 240);
+  --ring: oklch(0.68 0.15 220);
+
+  --sidebar: oklch(0.16 0.013 240);
+  --sidebar-foreground: oklch(0.94 0.005 240);
+  --sidebar-primary: oklch(0.68 0.15 220);
+  --sidebar-primary-foreground: oklch(0.13 0.012 240);
+  --sidebar-accent: oklch(0.24 0.016 220);
+  --sidebar-accent-foreground: oklch(0.94 0.005 220);
+  --sidebar-border: oklch(0.25 0.014 240);
+  --sidebar-ring: oklch(0.68 0.15 220);
+
+  --premium: oklch(0.68 0.20 285);
+  --premium-foreground: oklch(0.13 0.012 240);
+
+  --chart-1: oklch(0.68 0.15 220);
+  --chart-2: oklch(0.72 0.16 165);
+  --chart-3: oklch(0.78 0.14 70);
+  --chart-4: oklch(0.70 0.20 25);
+  --chart-5: oklch(0.70 0.20 285);
+}
+
+@theme inline {
+  --font-sans: var(--font-sans), system-ui, sans-serif;
+  --font-mono: var(--font-mono), ui-monospace, monospace;
+  --font-arabic: var(--font-arabic), system-ui, sans-serif;
+
+  /* Fluid type scale — Tailwind text-* utilities now scale with viewport via clamp() */
+  --text-xs:   var(--font-size-xs,   0.75rem);
+  --text-sm:   var(--font-size-sm,   0.875rem);
+  --text-base: var(--font-size-base, 1rem);
+  --text-lg:   var(--font-size-lg,   1.125rem);
+  --text-xl:   var(--font-size-xl,   1.25rem);
+  --text-2xl:  var(--font-size-2xl,  1.5rem);
+  --text-3xl:  var(--font-size-3xl,  1.875rem);
+  --text-4xl:  var(--font-size-4xl,  2.25rem);
+
+
+  /* Color mappings */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-premium: var(--premium);
+  --color-premium-foreground: var(--premium-foreground);
+
+  /* Radius scale */
+  --radius-sm: calc(var(--radius) * 0.5);
+  --radius-md: calc(var(--radius) * 0.75);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.5);
+  --radius-2xl: calc(var(--radius) * 2);
+  --radius-full: 9999px;
+
+  /* Sidebar */
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Glass effect */
+  --glass-blur: blur(calc(var(--glass-intensity) * 100px));
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  [dir="rtl"] body {
+    font-family: var(--font-arabic), var(--font-sans), system-ui, sans-serif;
+  }
+
+
+  /* Smooth transitions for theme changes */
+  html {
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  /* Disable transitions on initial load and theme switch */
+  html.no-transition,
+  html.no-transition * {
+    transition: none !important;
+  }
+
+  /* ========================================
+     MODERN SCROLLBAR SYSTEM
+     ======================================== */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in oklch, var(--primary) 40%, transparent) transparent;
+  }
+
+  *:hover {
+    scrollbar-color: color-mix(in oklch, var(--primary) 60%, transparent) color-mix(in oklch, var(--muted) 20%, transparent);
+  }
+
+  *::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 100px;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg,
+        color-mix(in oklch, var(--primary) 40%, transparent),
+        color-mix(in oklch, var(--accent) 30%, transparent));
+    border-radius: 100px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+    transition: all 0.2s ease;
+  }
+
+  *::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg,
+        color-mix(in oklch, var(--primary) 60%, transparent),
+        color-mix(in oklch, var(--accent) 50%, transparent));
+  }
+
+  *::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+}
+
+@layer utilities {
+  .scrollbar-hide {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Subtle sidebar scrollbar — thin, neutral, hover-revealed. Overrides the
+     global primary-gradient thumb so the nav chrome stays quiet. */
+  .sidebar-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+  }
+
+  .sidebar-scroll:hover {
+    scrollbar-color: color-mix(in oklch, var(--sidebar-foreground) 22%, transparent) transparent;
+  }
+
+  .sidebar-scroll::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .sidebar-scroll::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .sidebar-scroll::-webkit-scrollbar-thumb {
+    background: transparent;
+    border-radius: 100px;
+    border: none;
+    transition: background 0.15s ease;
+  }
+
+  .sidebar-scroll:hover::-webkit-scrollbar-thumb {
+    background: color-mix(in oklch, var(--sidebar-foreground) 22%, transparent);
+  }
+
+  .sidebar-scroll::-webkit-scrollbar-thumb:hover {
+    background: color-mix(in oklch, var(--sidebar-foreground) 38%, transparent);
+  }
+}
+
+/* ========================================
+     GPU-ACCELERATED ANIMATIONS
+     ======================================== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 20px, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translate3d(0, -20px, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translate3d(-20px, 0, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translate3d(20px, 0, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale3d(0.95, 0.95, 1);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale3d(1, 1, 1);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  50% {
+    transform: translate3d(0, -10px, 0);
+  }
+}
+
+@keyframes glow {
+
+  0%,
+  100% {
+    box-shadow: 0 0 5px color-mix(in oklch, var(--primary) 30%, transparent);
+  }
+
+  50% {
+    box-shadow: 0 0 20px color-mix(in oklch, var(--primary) 50%, transparent);
+  }
+}
+
+@keyframes gradient-x {
+
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes bounce {
+
+  0%,
+  100% {
+    transform: translateY(-5%);
+    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+  }
+
+  50% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  }
+}
+
+@keyframes pulse {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Animation utility classes */
+.animate-fade-in {
+  animation: fadeIn calc(300ms * var(--anim-duration-scale)) ease-out;
+}
+
+.animate-fade-out {
+  animation: fadeOut calc(300ms * var(--anim-duration-scale)) ease-in;
+}
+
+.animate-slide-in-up {
+  animation: slideInUp calc(300ms * var(--anim-duration-scale)) cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.animate-slide-in-down {
+  animation: slideInDown calc(300ms * var(--anim-duration-scale)) cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.animate-slide-in-left {
+  animation: slideInLeft calc(300ms * var(--anim-duration-scale)) cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.animate-slide-in-right {
+  animation: slideInRight calc(300ms * var(--anim-duration-scale)) cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.animate-scale-in {
+  animation: scaleIn calc(200ms * var(--anim-duration-scale)) ease-out;
+}
+
+/*
+ * Dashboard card entrance — 30px translate-up + fade with a long ease-out
+ * curve, designed to be paired with an inline `animation-delay` for staggered
+ * grids. `both` fill mode keeps the element at the initial keyframe during the
+ * delay so cards don't flash visible before their turn.
+ *
+ * Replaces a framer-motion `<motion.div initial animate transition>` pair on
+ * DashboardCard so framer-motion does not enter the synchronous module graph
+ * via the @/ui/application barrel.
+ */
+@keyframes dashboardCardEnter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 14px, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.animate-dashboard-card {
+  animation: dashboardCardEnter calc(420ms * var(--anim-duration-scale)) cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-shimmer {
+  animation: shimmer 2s linear infinite;
+  background-size: 200% 100%;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-glow {
+  animation: glow 2s ease-in-out infinite;
+}
+
+.animate-gradient-x {
+  animation: gradient-x 3s ease infinite;
+  background-size: 200% 100%;
+}
+
+/* ========================================
+     GLASSMORPHISM EFFECTS
+     ======================================== */
+.glass {
+  background: color-mix(in oklch, var(--card) 80%, transparent);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid color-mix(in oklch, var(--border) 50%, transparent);
+}
+
+.glass-strong {
+  background: color-mix(in oklch, var(--card) 90%, transparent);
+  backdrop-filter: blur(20px);
+  border: 1px solid color-mix(in oklch, var(--border) 60%, transparent);
+}
+
+.glass-noise {
+  position: relative;
+  isolation: isolate;
+  /* Hardware acceleration hint */
+  will-change: transform, backdrop-filter;
+}
+
+.glass-noise::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  opacity: 0.06;
+  pointer-events: none;
+  /* Using a more performant, static noise pattern instead of procedural SVG turbulence */
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='1' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+}
+
+/* GPU-Accelerated Utility Classes */
+.will-change-gpu {
+  will-change: transform, opacity;
+}
+
+.will-change-filter {
+  will-change: filter, backdrop-filter;
+}
+
+/* ========================================
+     INTERACTIVE EFFECTS
+     ======================================== */
+.interactive-lift {
+  @apply transition-all duration-200;
+}
+
+.interactive-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px -10px color-mix(in oklch, var(--foreground) 15%, transparent);
+}
+
+.interactive-lift:active {
+  transform: translateY(0);
+}
+
+.interactive-scale {
+  @apply transition-transform duration-200;
+}
+
+.interactive-scale:hover {
+  transform: scale(1.02);
+}
+
+.interactive-scale:active {
+  transform: scale(0.98);
+}
+
+.interactive-glow {
+  @apply transition-shadow duration-300;
+}
+
+.interactive-glow:hover {
+  box-shadow: 0 0 20px color-mix(in oklch, var(--primary) 30%, transparent);
+}
+
+/* ========================================
+     GRADIENT UTILITIES
+     ======================================== */
+.gradient-primary {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+}
+
+.gradient-primary-subtle {
+  background: linear-gradient(135deg,
+      color-mix(in oklch, var(--primary) 15%, transparent) 0%,
+      transparent 100%);
+}
+
+.gradient-mesh {
+  background:
+    radial-gradient(at 40% 20%, color-mix(in oklch, var(--primary) 20%, transparent) 0px, transparent 50%),
+    radial-gradient(at 80% 0%, color-mix(in oklch, var(--accent) 15%, transparent) 0px, transparent 50%),
+    radial-gradient(at 0% 50%, color-mix(in oklch, var(--secondary) 15%, transparent) 0px, transparent 50%);
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ========================================
+     SHADOW UTILITIES
+     ======================================== */
+.shadow-soft {
+  box-shadow:
+    0 1px 2px color-mix(in oklch, var(--foreground) calc(var(--shadow-strength) * 50%), transparent),
+    0 2px 4px color-mix(in oklch, var(--foreground) calc(var(--shadow-strength) * 30%), transparent);
+}
+
+.shadow-medium {
+  box-shadow:
+    0 4px 6px color-mix(in oklch, var(--foreground) calc(var(--shadow-strength) * 50%), transparent),
+    0 8px 12px color-mix(in oklch, var(--foreground) calc(var(--shadow-strength) * 30%), transparent);
+}
+
+.shadow-strong {
+  box-shadow:
+    0 10px 20px color-mix(in oklch, var(--foreground) calc(var(--shadow-strength) * 80%), transparent),
+    0 20px 40px color-mix(in oklch, var(--foreground) calc(var(--shadow-strength) * 50%), transparent);
+}
+
+.shadow-primary {
+  box-shadow: 0 10px 40px -10px var(--primary);
+}
+
+.shadow-glow {
+  box-shadow: 0 0 20px color-mix(in oklch, var(--primary) 40%, transparent);
+}
+
+/* ========================================
+     SPRING TRANSITIONS
+     ======================================== */
+.transition-spring {
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.transition-spring-fast {
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.transition-bounce {
+  transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* ========================================
+     ACCESSIBILITY
+     ======================================== */
+.focus-ring {
+  @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background;
+}
+
+.focus-ring-inset {
+  @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+
+  .glass,
+  .glass-strong {
+    background: var(--card);
+    backdrop-filter: none;
+    border: 2px solid var(--border);
+  }
+}
+
+/* ========================================
+     SKELETON LOADER
+     ======================================== */
+.skeleton {
+  background: linear-gradient(90deg,
+      color-mix(in oklch, var(--muted) 100%, transparent) 0%,
+      color-mix(in oklch, var(--muted) 50%, transparent) 50%,
+      color-mix(in oklch, var(--muted) 100%, transparent) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* When the user has requested reduced motion, swap the moving gradient for a
+   static solid muted color. Avoids the near-zero-duration shimmer flickering. */
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    background: color-mix(in oklch, var(--muted) 75%, transparent) !important;
+    animation: none !important;
+  }
+}
+
+/* ========================================
+     SCROLLBAR HIDDEN UTILITY
+     ======================================== */
+.scrollbar-hidden {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none;
+}
+
+/* ─── Fluid typography scale ──────────────────────────────────────────── */
+:root {
+  --font-size-xs:   clamp(0.6875rem, 0.66rem + 0.14vw, 0.75rem);
+  --font-size-sm:   clamp(0.8125rem, 0.79rem + 0.12vw, 0.875rem);
+  --font-size-base: clamp(0.9375rem, 0.91rem + 0.15vw, 1rem);
+  --font-size-lg:   clamp(1.0625rem, 1.03rem + 0.16vw, 1.125rem);
+  --font-size-xl:   clamp(1.1875rem, 1.14rem + 0.24vw, 1.25rem);
+  --font-size-2xl:  clamp(1.375rem,  1.3rem  + 0.38vw, 1.5rem);
+  --font-size-3xl:  clamp(1.625rem,  1.5rem  + 0.63vw, 1.875rem);
+  --font-size-4xl:  clamp(2rem,      1.83rem + 0.88vw, 2.25rem);
+}
+
+/* ─── Responsive layout vars ──────────────────────────────────────────── */
+@media (max-width: 768px) {
+  :root {
+    --sidebar-width: 100vw;
+    --sidebar-collapsed-width: 0px;
+  }
+}
+
+/* ─── Focus ring ──────────────────────────────────────────────────────── */
+/* --ring is itself a full oklch() value; wrapping it in hsl() produced an
+   invalid color and the focus ring rendered transparent. Reference it directly. */
+:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm, 0.25rem);
+}
+
+/* (Global prefers-reduced-motion is defined once above — see line ~785.) */
+
+/* ─── RTL support ─────────────────────────────────────────────────────── */
+[dir="rtl"] .flip-rtl { transform: scaleX(-1); }
+
+/* ─── Selection color ─────────────────────────────────────────────────── */
+::selection {
+  background: color-mix(in oklch, var(--primary) 20%, transparent);
+  color: var(--foreground);
+}
+
+/* ─── Print styles ────────────────────────────────────────────────────── */
+@media print {
+  .no-print, nav, aside, [data-sidebar], [data-header] { display: none !important; }
+  main { margin: 0 !important; padding: 0 !important; }
+  body { font-size: 11pt; color: #000; background: #fff; }
+}

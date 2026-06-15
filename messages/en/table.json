@@ -1,0 +1,26 @@
+{
+    "export_excel": "Export Excel",
+    "columns": "Columns",
+    "density": "Row density",
+    "density_compact": "Compact",
+    "density_normal": "Normal",
+    "density_comfortable": "Comfortable",
+    "switch_to_direct": "Switch to Direct Actions",
+    "switch_to_menu": "Switch to Menu Actions",
+    "rows_per_page": "Rows per page",
+    "page": "Page",
+    "of": "of",
+    "rows_selected": "row(s) selected",
+    "showing": "Showing",
+    "results": "results",
+    "a11y": {
+        "pagination_nav": "Pagination Navigation",
+        "page_numbers": "Page numbers",
+        "first_page": "Go to first page",
+        "previous_page": "Go to previous page",
+        "current_page": "Current page number",
+        "next_page": "Go to next page",
+        "last_page": "Go to last page"
+    },
+    "loading": "Loading..."
+}

@@ -1,0 +1,13 @@
+{
+    "name": "eslint-plugin-custom",
+    "version": "1.0.0",
+    "description": "Custom ESLint rules for enforcing config-driven architecture",
+    "main": "index.js",
+    "keywords": [
+        "eslint",
+        "eslintplugin",
+        "eslint-plugin"
+    ],
+    "author": "",
+    "license": "ISC"
+}

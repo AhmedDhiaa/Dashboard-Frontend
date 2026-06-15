@@ -1,0 +1,6 @@
+import { useState } from "react"
+
+export function use{{pascalCase name}}<T = unknown>(initial?: T) {
+  const [state, setState] = useState<T | undefined>(initial)
+  return { state, setState }
+}

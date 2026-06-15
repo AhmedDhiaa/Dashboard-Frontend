@@ -1,0 +1,74 @@
+# Files / dirs the Dockerfile does NOT need shipped into the build context.
+# Everything here is either re-derived inside the image (build outputs,
+# node_modules) or is irrelevant at runtime (test fixtures, IDE state,
+# git history).
+#
+# Trim the build context aggressively: a few hundred MB of node_modules
+# and .next caches sent over the docker daemon socket adds noticeable
+# latency to `docker build` even with BuildKit's tar streaming.
+
+# ─── Build outputs (rebuilt inside the image) ─────────────────────────
+.next/
+out/
+build/
+dist/
+publish/
+
+# ─── Dependencies (re-installed in the deps stage) ────────────────────
+node_modules/
+.pnpm-store/
+
+# ─── Tests, fixtures, e2e (not needed in the runtime tree) ────────────
+coverage/
+.nyc_output/
+**/__tests__/
+**/*.test.ts
+**/*.test.tsx
+__tests__/
+e2e/
+playwright-report/
+playwright.config.ts
+
+# ─── Tooling state ────────────────────────────────────────────────────
+.turbo/
+.cache/
+.eslintcache
+*.tsbuildinfo
+.entity-builder-backups/
+.entity-builder-cache/
+
+# ─── IDE / editor / OS noise ──────────────────────────────────────────
+.vscode/
+.idea/
+.cursor/
+.windsurfrules
+.DS_Store
+*.swp
+*.swo
+*~
+
+# ─── Source control ───────────────────────────────────────────────────
+.git/
+.github/
+.gitignore
+.gitattributes
+
+# ─── Secrets ─ never in an image ──────────────────────────────────────
+.env
+.env.*
+!.env.example
+
+# ─── Docs / runbooks (not part of the runtime contract) ───────────────
+docs/
+*.md
+!README.md
+
+# ─── The Dockerfile itself + this ignore file ─────────────────────────
+Dockerfile
+.dockerignore
+
+# ─── Misc that shouldn't ship ─────────────────────────────────────────
+.vercel/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

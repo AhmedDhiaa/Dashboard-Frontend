@@ -1,0 +1,12 @@
+{
+  "$schema": "./bundle-budgets.schema.json",
+  "_comment": "Gzipped JS budgets in KB. `shared` caps first-load chunks loaded on every page (rootMainFiles + polyfills). `routes` caps per-route incremental weight (chunks specific to that route, excluding shared). `routes.default` applies to any route not explicitly listed. Read by scripts/check-bundle-budget.mjs.",
+  "shared": 350,
+  "routes": {
+    "/(dashboard)/page": 220,
+    "/(dashboard)/orders/[id]/page": 180,
+    "/(dashboard)/admin/entity-builder/page": 250,
+    "/(dashboard)/admin/page-builder/page": 320,
+    "default": 150
+  }
+}

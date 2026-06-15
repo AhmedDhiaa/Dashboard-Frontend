@@ -1,0 +1,16 @@
+{
+    "title": "لوحة التحكم",
+    "welcome": "مرحباً بك في Acme",
+    "overview": "نظرة عامة",
+    "revenue": "المبيعات",
+    "categories": {
+        "tickets": "تذاكر الدعم"
+    },
+    "entities": "الكيانات",
+    "total": "الإجمالي",
+    "count": "العدد",
+    "this_month": "هذا الشهر",
+    "this_week": "هذا الأسبوع",
+    "today": "اليوم",
+    "of": "من"
+}

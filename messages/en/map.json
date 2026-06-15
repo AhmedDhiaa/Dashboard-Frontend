@@ -1,0 +1,30 @@
+{
+    "controls": {
+        "drawPolygon": "Draw Polygon",
+        "drawPolygonHint": "Click to add points",
+        "drawCircle": "Draw Circle",
+        "drawCircleHint": "Click and drag",
+        "cancelDrawing": "Cancel Drawing",
+        "pressEsc": "Press ESC",
+        "clearBoundary": "Clear Boundary",
+        "clearBoundaryHint": "Remove all shapes",
+        "focusArea": "Focus Area",
+        "focusAreaHint": "Fit to boundary",
+        "myLocation": "My Location",
+        "myLocationHint": "Center on location",
+        "pickLocation": "Pick Location",
+        "pickLocationHint": "Click on map to select",
+        "search": "Search Places",
+        "searchHint": "Find locations and places"
+    },
+    "status": {
+        "loading": "Loading map...",
+        "api_key_check": "• Verify Google Maps API key is valid",
+        "network_check": "• Check network connection",
+        "may_take_seconds": "This may take a few seconds"
+    },
+    "location": {
+        "not_available": "Location not available",
+        "verified": "Verified Location"
+    }
+}

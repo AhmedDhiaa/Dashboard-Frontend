@@ -1,0 +1,25 @@
+/**
+ * {{pascalCase name}} Service
+ * Domain: {{pascalCase area}}
+ */
+
+import { BaseCRUDService } from "@/infra/api/crud-service"
+import type {
+  {{pascalCase name}}FormValues,
+  {{pascalCase name}}UpdateFormValues,
+} from "./{{kebabCase name}}.schema"
+import type { {{pascalCase name}} } from "./{{kebabCase name}}.types"
+
+export type { {{pascalCase name}} } from "./{{kebabCase name}}.types"
+
+class {{pascalCase name}}Service extends BaseCRUDService<
+  {{pascalCase name}},
+  {{pascalCase name}}FormValues,
+  {{pascalCase name}}UpdateFormValues
+> {
+  constructor() {
+    super("{{routePath}}")
+  }
+}
+
+export const {{camelCase name}}Service = new {{pascalCase name}}Service()

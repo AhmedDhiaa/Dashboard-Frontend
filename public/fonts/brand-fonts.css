@@ -1,0 +1,56 @@
+/* PBL / 29LT brand fonts — self-hosted, copied from the Peace Bird Land brand kit. */
+
+/* 29LT Kaff — Arabic + Latin brand sans */
+@font-face {
+  font-family: "29LT Kaff";
+  src: url("/fonts/brand/kaff-300.ttf") format("truetype");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "29LT Kaff";
+  src: url("/fonts/brand/kaff-400.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "29LT Kaff";
+  src: url("/fonts/brand/kaff-600.ttf") format("truetype");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "29LT Kaff";
+  src: url("/fonts/brand/kaff-900.ttf") format("truetype");
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* 29LT AdaRound — rounded display (Latin) */
+@font-face {
+  font-family: "29LT AdaRound";
+  src: url("/fonts/brand/adaround-500.otf") format("opentype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "29LT AdaRound";
+  src: url("/fonts/brand/adaround-700.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* 29LT Bukra — Arabic sans */
+@font-face {
+  font-family: "29LT Bukra";
+  src: url("/fonts/brand/bukra-400.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}

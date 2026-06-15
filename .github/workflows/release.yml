@@ -1,0 +1,43 @@
+name: Release
+
+# On a version tag (v1.2.3) build the production app, package the portable
+# publish bundle, and attach it to a GitHub Release. The bundle is the
+# OS-agnostic artifact (Node standalone server + static assets + start scripts
+# for Linux/Windows/IIS + systemd/PM2/nginx configs) — deployable anywhere a
+# Node 22 runtime exists. The Docker image is published separately by docker-publish.yml.
+
+on:
+  push:
+    tags: ["v*.*.*"]
+  workflow_dispatch: {}
+
+permissions:
+  contents: write # create the release + upload assets
+
+env:
+  NODE_VERSION: "22"
+  NEXT_TELEMETRY_DISABLED: "1"
+  HUSKY: "0"
+
+jobs:
+  release:
+    name: Build & publish release
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci
+      - name: Build + package portable publish bundle
+        run: npm run publish:bundle
+        env:
+          NODE_ENV: production
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*.tar.gz
+          generate_release_notes: true
+          fail_on_unmatched_files: true

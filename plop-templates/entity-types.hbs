@@ -1,0 +1,26 @@
+/**
+ * {{pascalCase name}} Types
+ * Domain: {{pascalCase area}}
+ */
+
+export interface {{pascalCase name}} {
+  id: number
+  code: string
+  name: string
+  {{#if bilingual}}
+  foreignName: string
+  {{/if}}
+  {{#if withStatus}}
+  isActive: boolean
+  {{/if}}
+  isSystem: boolean
+  note: string | null
+  {{#if withAudit}}
+  creationTime: string
+  lastModificationTime: string | null
+  {{/if}}
+  concurrencyStamp: string
+  entityType?: number
+  tenantId?: string | null
+  [key: string]: unknown
+}

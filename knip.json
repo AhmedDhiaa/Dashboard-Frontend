@@ -1,0 +1,24 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "entry": [
+    "src/core/entities/configs/init.ts!",
+    "scripts/build-static-entity-convertibility.mts"
+  ],
+  "ignore": [
+    "scripts/**",
+    "plopfile.mjs",
+    "plop-templates/**",
+    "public/**"
+  ],
+  "ignoreDependencies": [
+    "lint-staged",
+    "@typescript-eslint/parser",
+    "server-only"
+  ],
+  "ignoreBinaries": [
+    "lint-staged",
+    "playwright"
+  ],
+  "ignoreExportsUsedInFile": true,
+  "tags": ["-public"]
+}

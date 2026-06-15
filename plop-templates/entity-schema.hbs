@@ -1,0 +1,44 @@
+import { z } from "zod"
+import type { TFunction } from "@/core/entities/schema-types"
+
+export const get{{pascalCase name}}CreateSchema = (t: TFunction) =>
+  z.object({
+    code: z
+      .string()
+      .min(1, t("errors.required"))
+      .max(20, t("errors.max_length", { max: 20 })),
+    name: z.string().min(1, t("errors.required")).max(100),
+    {{#if bilingual}}
+    foreignName: z.string().min(1, t("errors.required")).max(100),
+    {{/if}}
+    {{#if withStatus}}
+    isActive: z.boolean(),
+    {{/if}}
+    note: z
+      .string()
+      .max(500, t("errors.max_length", { max: 500 }))
+      .optional(),
+  })
+
+export const get{{pascalCase name}}UpdateSchema = (t: TFunction) =>
+  z.object({
+    code: z
+      .string()
+      .min(1, t("errors.required"))
+      .max(20, t("errors.max_length", { max: 20 })),
+    name: z.string().min(1, t("errors.required")).max(100),
+    {{#if bilingual}}
+    foreignName: z.string().min(1, t("errors.required")).max(100),
+    {{/if}}
+    {{#if withStatus}}
+    isActive: z.boolean(),
+    {{/if}}
+    note: z
+      .string()
+      .max(500, t("errors.max_length", { max: 500 }))
+      .optional(),
+    concurrencyStamp: z.string().min(1, t("errors.required")),
+  })
+
+export type {{pascalCase name}}FormValues = z.infer<ReturnType<typeof get{{pascalCase name}}CreateSchema>>
+export type {{pascalCase name}}UpdateFormValues = z.infer<ReturnType<typeof get{{pascalCase name}}UpdateSchema>>

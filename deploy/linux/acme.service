@@ -1,0 +1,39 @@
+# systemd unit for the Acme dashboard (Next.js standalone bundle).
+#
+# Install:
+#   sudo cp deploy/linux/acme.service /etc/systemd/system/acme.service
+#   sudo useradd --system --no-create-home --shell /usr/sbin/nologin acme   # once
+#   sudo cp .env /opt/acme/.env                                             # secrets
+#   sudo systemctl daemon-reload && sudo systemctl enable --now acme
+#   sudo journalctl -u acme -f                                              # logs
+#
+# Adjust WorkingDirectory / paths to where you extracted the bundle.
+
+[Unit]
+Description=Acme Dashboard (Next.js standalone)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/acme
+EnvironmentFile=-/opt/acme/.env
+Environment=NODE_ENV=production
+Environment=PORT=3000
+Environment=HOSTNAME=0.0.0.0
+ExecStart=/usr/bin/node /opt/acme/server.js
+Restart=always
+RestartSec=5
+User=acme
+Group=acme
+
+# Hardening — the process only needs to read the bundle and listen on a port.
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/acme
+LimitNOFILE=65535
+
+[Install]
+WantedBy=multi-user.target

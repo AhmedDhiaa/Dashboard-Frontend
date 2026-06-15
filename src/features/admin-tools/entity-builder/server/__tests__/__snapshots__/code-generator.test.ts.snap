@@ -1,0 +1,140 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`config file: rich-shape emission (parity with handwritten entities) > matches the canonical snapshot for the invoice fixture 1`] = `
+"/**
+ * Invoice entity config
+ * Auto-generated from EntityBuilder.
+ */
+
+import { Box } from "lucide-react"
+import type { EntityConfig } from "@/core/entities/config-types"
+import {
+  getInvoiceCreateSchema,
+  getInvoiceUpdateSchema,
+  type InvoiceFormValues,
+} from "./invoice.schema"
+import { invoiceService, type Invoice } from "./invoice.service"
+
+export const invoiceConfig: EntityConfig<Invoice, InvoiceFormValues> = {
+  entityName: "invoice",
+  singularName: "Invoice",
+  pluralName: "Invoices",
+  icon: Box,
+  service: invoiceService,
+  permissionKey: "Api.Invoice",
+  basePath: "/invoices",
+
+  listColumns: [
+    { field: "number", type: "badge-code", titleKey: "pages.invoice.number" },
+    { field: "issueDate", type: "date", titleKey: "pages.invoice.issueDate" },
+    { field: "customerId", type: "text-secondary", titleKey: "pages.invoice.customerId" },
+    { field: "totalAmount", type: "currency", titleKey: "pages.invoice.totalAmount" },
+    { field: "status", type: "badge", titleKey: "pages.invoice.status" },
+  ],
+
+  searchFields: ["number", "currency"],
+  defaultPageSize: 10,
+
+  detailSections: [
+    {
+      title: "primary_information",
+      fields: [
+        { name: "number", type: "text-secondary", labelKey: "pages.invoice.number" },
+        { name: "issueDate", type: "date", labelKey: "pages.invoice.issueDate" },
+        { name: "status", type: "enum", labelKey: "pages.invoice.status" },
+        { name: "customerId", type: "relation", labelKey: "pages.invoice.customerId" },
+        { name: "currency", type: "badge", labelKey: "pages.invoice.currency" },
+        { name: "discountPercentage", type: "number", labelKey: "pages.invoice.discountPercentage" },
+        { name: "totalAmount", type: "currency", labelKey: "pages.invoice.totalAmount" },
+        { name: "attachments", type: "text-secondary", labelKey: "pages.invoice.attachments" },
+      ],
+    },
+  ],
+
+  formFields: {
+    number: { type: "text", labelKey: "pages.invoice.number", placeholder: "pages.invoice.number_placeholder", required: true },
+    issueDate: { type: "date", labelKey: "pages.invoice.issueDate", placeholder: "pages.invoice.issueDate_placeholder", required: true },
+    status: { type: "enum", labelKey: "pages.invoice.status", placeholder: "pages.invoice.status_placeholder", enumType: "InvoiceStatus" },
+    customerId: { type: "autocomplete", labelKey: "pages.invoice.customerId", placeholder: "pages.invoice.customerId_placeholder", required: true, entityName: "customer" },
+    currency: { type: "select", labelKey: "pages.invoice.currency", placeholder: "pages.invoice.currency_placeholder" },
+    discountPercentage: { type: "number", labelKey: "pages.invoice.discountPercentage", placeholder: "pages.invoice.discountPercentage_placeholder" },
+    totalAmount: { type: "number", labelKey: "pages.invoice.totalAmount", placeholder: "pages.invoice.totalAmount_placeholder" },
+    attachments: { type: "file", labelKey: "pages.invoice.attachments", placeholder: "pages.invoice.attachments_placeholder", accept: "application/pdf,image/*" },
+    concurrencyStamp: { type: "text", hidden: true },
+  },
+
+  formFieldOrder: ["number", "issueDate", "status", "customerId", "currency", "discountPercentage", "totalAmount", "attachments"],
+  excludeFields: ["concurrencyStamp"],
+
+  formLayout: {
+    type: "sections",
+    sections: [
+      {
+        id: "section_1",
+        titleKey: "pages.invoice.section_1_title",
+        fields: ["number", "issueDate"],
+        columns: 2,
+      },
+      {
+        id: "section_2",
+        titleKey: "pages.invoice.section_2_title",
+        fields: ["customerId", "currency"],
+        columns: 2,
+      },
+      {
+        id: "section_3",
+        titleKey: "pages.invoice.section_3_title",
+        fields: ["discountPercentage"],
+        columns: 1,
+      },
+      {
+        id: "section_4",
+        titleKey: "pages.invoice.section_4_title",
+        fields: ["attachments"],
+        columns: 1,
+      },
+    ],
+  },
+
+  createSchema: getInvoiceCreateSchema,
+  updateSchema: getInvoiceUpdateSchema,
+
+  defaultFormValues: {
+    number: "",
+    issueDate: undefined,
+    status: undefined,
+    customerId: undefined,
+    currency: undefined,
+    discountPercentage: 0,
+    totalAmount: 0,
+    attachments: undefined,
+  },
+
+  entityToFormData: (entity: Invoice) => ({
+    number: entity.number || "",
+    issueDate: entity.issueDate,
+    status: entity.status,
+    customerId: entity.customerId,
+    currency: entity.currency,
+    discountPercentage: entity.discountPercentage ?? 0,
+    totalAmount: entity.totalAmount ?? 0,
+    attachments: entity.attachments,
+    concurrencyStamp: entity.concurrencyStamp,
+  }),
+
+  translations: {
+    listTitle: "pages.invoice.title",
+    listDescription: "pages.invoice.description",
+    detailTitle: "pages.invoice.detail_title",
+    createTitle: "pages.invoice.create_title",
+    editTitle: "pages.invoice.edit_title",
+    searchPlaceholder: "pages.invoice.searchPlaceholder",
+    successCreate: "pages.invoice.create_success",
+    successUpdate: "pages.invoice.update_success",
+    successDelete: "pages.invoice.delete_success",
+  },
+
+  features: {"create":true,"edit":true,"delete":true,"view":true,"export":true,"import":true},
+}
+"
+`;

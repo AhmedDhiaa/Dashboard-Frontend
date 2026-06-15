@@ -1,0 +1,16 @@
+{
+    "placeholders": {
+        "select": "اختر {field}",
+        "search": "بحث في {field}..."
+    },
+    "sections": {
+        "additional_info": "معلومات إضافية"
+    },
+    "code": "الرمز",
+    "foreignName": "الاسم الأجنبي",
+    "note": "ملاحظات الوحدة",
+    "baseRef": "مرجع الأساس",
+    "baseEntityType": "نوع كيان الأساس",
+    "title": "عنوان الإشعار",
+    "body": "محتوى الإشعار"
+}

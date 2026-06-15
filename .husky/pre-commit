@@ -1,0 +1,16 @@
+# Run lint-staged for code formatting and linting
+npx lint-staged
+
+# Run TypeScript type check
+echo "Running TypeScript type check..."
+npm run type-check
+
+# Run architecture validation
+echo "Running architecture validation..."
+npm run validate
+
+# Run tests (fast unit tests only)
+# echo "Running unit tests..."
+# npm run test -- --run --reporter=dot
+
+echo "✅ All pre-commit checks passed!"

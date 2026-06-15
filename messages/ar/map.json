@@ -1,0 +1,30 @@
+{
+    "controls": {
+        "drawPolygon": "رسم مضلع",
+        "drawPolygonHint": "انقر لإضافة نقاط",
+        "drawCircle": "رسم دائرة",
+        "drawCircleHint": "انقر واسحب",
+        "cancelDrawing": "إلغاء الرسم",
+        "pressEsc": "اضغط ESC",
+        "clearBoundary": "مسح الحدود",
+        "clearBoundaryHint": "إزالة جميع الأشكال",
+        "focusArea": "تركيز المنطقة",
+        "focusAreaHint": "ملاءمة الحدود",
+        "myLocation": "موقعي",
+        "myLocationHint": "التوسيط على الموقع",
+        "pickLocation": "اختيار موقع",
+        "pickLocationHint": "انقر على الخريطة للاختيار",
+        "search": "البحث عن الأماكن",
+        "searchHint": "البحث عن المواقع والأماكن"
+    },
+    "status": {
+        "loading": "جاري تحميل الخريطة...",
+        "api_key_check": "• تحقق من صحة مفتاح Google Maps API",
+        "network_check": "• تحقق من اتصال الشبكة",
+        "may_take_seconds": "قد يستغرق ذلك بضع ثوانٍ"
+    },
+    "location": {
+        "not_available": "الموقع غير متاح",
+        "verified": "موقع موثّق"
+    }
+}

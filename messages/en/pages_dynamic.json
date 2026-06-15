@@ -1,0 +1,13 @@
+{
+  "draft-page": {
+    "title": "Untitled page",
+    "blocks": [
+      {
+        "text": "abc"
+      },
+      {
+        "text": "enter your name\n"
+      }
+    ]
+  }
+}

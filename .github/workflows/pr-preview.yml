@@ -1,0 +1,59 @@
+name: PR preview image
+
+# Builds a per-PR image so reviewers can run the exact change locally
+# (docker run ghcr.io/<owner>/<repo>:pr-<number>) and drops a sticky comment
+# with the pull command. Only runs for same-repo PRs (forks can't push to GHCR).
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+concurrency:
+  group: pr-preview-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  packages: write
+  pull-requests: write
+
+jobs:
+  preview:
+    name: Build preview image
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build & push preview image
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ghcr.io/${{ github.repository }}:pr-${{ github.event.pull_request.number }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          provenance: false
+
+      - name: Sticky preview comment
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: pr-preview
+          message: |
+            🐳 **Preview image built** for this PR.
+
+            ```bash
+            docker run --rm -p 3000:3000 \
+              -e NEXTAUTH_SECRET=dev-secret-change-me \
+              -e NEXT_PUBLIC_USE_MOCK_API=true \
+              ghcr.io/${{ github.repository }}:pr-${{ github.event.pull_request.number }}
+            ```
+            Then open http://localhost:3000. Image updates on every push to this PR.
