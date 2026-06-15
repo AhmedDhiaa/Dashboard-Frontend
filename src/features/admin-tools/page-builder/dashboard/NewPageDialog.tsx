@@ -25,6 +25,7 @@ import { Input } from "@/ui/design-system/primitives/input"
 import { Label } from "@/ui/design-system/primitives/label"
 import { Button } from "@/ui/design-system/primitives/button"
 import { PERMISSIONS } from "@/shared/auth/permission-keys"
+import { slugify } from "@/shared/utils/general"
 import { createPage } from "./api"
 import type { PageSchema } from "../schema/page-schema"
 
@@ -44,7 +45,7 @@ export function NewPageDialog({ open, onOpenChange, onCreated }: NewPageDialogPr
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const pageId = idOverride ?? slugify(titleEn)
+  const pageId = idOverride ?? slugify(titleEn, 41)
   const idValid = ID_PATTERN.test(pageId)
   const canCreate = titleEn.trim().length > 0 && idValid && !busy
 
@@ -144,16 +145,4 @@ function Field({
       {hint && <p className="text-xs text-muted-foreground">{hint}</p>}
     </div>
   )
-}
-
-/** Latin slug → kebab id. Returns "" when the title has no usable ASCII
- *  (e.g. Arabic-only) — the caller then keeps the ID field empty so the
- *  user types one explicitly. */
-function slugify(input: string): string {
-  return input
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .replace(/-{2,}/g, "-")
-    .slice(0, 41)
 }

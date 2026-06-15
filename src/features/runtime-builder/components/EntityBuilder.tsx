@@ -27,14 +27,7 @@ import { useNotification } from "@/ui/application"
 import { notifySourceWrite } from "@/features/admin-tools/git-bridge/dashboard/notify-source-write"
 import { EntityAdvancedPanel } from "./EntityAdvancedPanel"
 import { EntityFieldsList } from "./EntityFieldsList"
-
-function slugify(input: string): string {
-  return input
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, "")
-}
+import { slugify } from "@/shared/utils/general"
 
 function validateMetadata(entity: RuntimeEntity): string | null {
   if (!entity.pluralName.trim() || !entity.singularName.trim()) {

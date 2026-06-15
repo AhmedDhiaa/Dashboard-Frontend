@@ -15,6 +15,11 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: false,
   },
 
+  // React Compiler (React 19) — auto-memoizes components so manual
+  // useMemo/useCallback/React.memo are largely unnecessary. Requires
+  // babel-plugin-react-compiler (devDependency).
+  reactCompiler: true,
+
   images: {
     remotePatterns: [
       { protocol: "https", hostname: `*.${brandDomain}` },
@@ -82,7 +87,6 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: [
       "lucide-react",
-      "@radix-ui/react-icons",
       "@radix-ui/react-alert-dialog",
       "@radix-ui/react-avatar",
       "@radix-ui/react-checkbox",

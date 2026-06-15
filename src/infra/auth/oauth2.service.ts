@@ -21,6 +21,7 @@ import type {
 } from "@/shared/types"
 import { OAUTH2_REQUEST_TIMEOUT_MS, OAUTH2_RETRY_ATTEMPTS, OAUTH2_RETRY_DELAY_MS } from "./auth-constants"
 import { IS_MOCK } from "@/infra/api/mock"
+import { sleep } from "@/shared/utils/general"
 import { mockTokenResponse } from "@/infra/api/mock/handlers/auth"
 
 // ─── Configuration ────────────────────────────────────────────────────────────
@@ -59,13 +60,6 @@ function createFormData(data: Record<string, string>): string {
     formData.append(key, value)
   })
   return formData.toString()
-}
-
-/**
- * Sleep utility for retry delay
- */
-function sleep(ms: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, ms))
 }
 
 /**

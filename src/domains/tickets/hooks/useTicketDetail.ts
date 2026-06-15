@@ -3,12 +3,13 @@
  */
 
 import { useState, useEffect } from "react"
+import { useQuery } from "@tanstack/react-query"
 import { logger } from "@/shared/logger"
 import { useSession } from "next-auth/react"
 import { useParams } from "next/navigation"
 import { ticketService, ticketMessageService } from "@/domains/tickets"
 import { useTicketSocket } from "./useTicketSocket"
-import type { Ticket, TicketMessage, BusinessPartner } from "../types"
+import type { TicketMessage, BusinessPartner } from "../types"
 
 function createOptimisticMessage(
   ticketId: string,
@@ -55,10 +56,24 @@ export function useTicketDetail() {
   const params = useParams()
   const ticketId = params.id as string
 
-  const [ticket, setTicket] = useState<Ticket | null>(null)
+  // Ticket fetch is owned by React Query (caching, dedup, retry). Messages are
+  // kept in local state because they're mutated live by the socket and by
+  // optimistic sends; they're (re)seeded from the query result below.
+  const {
+    data: ticket = null,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["ticket", ticketId],
+    queryFn: () => ticketService.getById(ticketId),
+    enabled: !!ticketId,
+  })
+
   const [messages, setMessages] = useState<TicketMessage[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    setMessages(ticket?.messages || [])
+  }, [ticket])
 
   const { isConnected, isConnecting, connectionId } = useTicketSocket({
     ticketId,
@@ -70,26 +85,6 @@ export function useTicketDetail() {
     },
     enabled: !!ticketId,
   })
-
-  useEffect(() => {
-    if (!ticketId) return
-
-    const loadTicket = async () => {
-      try {
-        setIsLoading(true)
-        setError(null)
-        const data = await ticketService.getById(ticketId)
-        setTicket(data)
-        setMessages(data.messages || [])
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to load ticket")
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    loadTicket()
-  }, [ticketId])
 
   const handleSendMessage = async (text: string, note?: string): Promise<void> => {
     if (!ticketId) return
@@ -130,7 +125,7 @@ export function useTicketDetail() {
     ticket,
     messages,
     isLoading,
-    error,
+    error: error ? (error instanceof Error ? error.message : "Failed to load ticket") : null,
     currentUserId,
     isConnected,
     isConnecting,

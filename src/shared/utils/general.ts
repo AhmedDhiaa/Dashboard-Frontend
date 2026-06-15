@@ -14,47 +14,25 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 /**
- * Deep clone an object
+ * Latin slug → kebab id. Runs of non-alphanumeric chars collapse to a single
+ * hyphen; leading/trailing hyphens are stripped. Returns "" when the input has
+ * no usable ASCII (e.g. Arabic-only), so callers can prompt for an explicit id.
+ * Pass `maxLength` to cap the result (e.g. a column/id length limit).
  */
-export function deepClone<T>(obj: T): T {
-  if (obj === null || typeof obj !== "object") return obj
-  if (obj instanceof Date) return new Date(obj.getTime()) as T
-  if (obj instanceof Array) return obj.map(item => deepClone(item)) as T
-  if (obj instanceof Object) {
-    const cloned = {} as T
-    for (const key in obj) {
-      if (obj.hasOwnProperty(key)) {
-        cloned[key] = deepClone(obj[key])
-      }
-    }
-    return cloned
-  }
-  return obj
+export function slugify(input: string, maxLength?: number): string {
+  const slug = input
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+  return maxLength ? slug.slice(0, maxLength) : slug
 }
 
 /**
- * Deep merge objects
+ * Resolve after `ms` milliseconds. Handy for retry back-off delays.
  */
-export function deepMerge<T extends Record<string, unknown>>(target: T, source: Partial<T>): T {
-  const result = { ...target }
-
-  for (const key in source) {
-    if (source.hasOwnProperty(key)) {
-      const sourceValue = source[key]
-      const targetValue = target[key]
-
-      if (sourceValue && typeof sourceValue === "object" && !Array.isArray(sourceValue)) {
-        result[key] = deepMerge(
-          (targetValue && typeof targetValue === "object" ? targetValue : {}) as Record<string, unknown>,
-          sourceValue as Record<string, unknown>,
-        ) as T[Extract<keyof T, string>]
-      } else {
-        result[key] = sourceValue as T[Extract<keyof T, string>]
-      }
-    }
-  }
-
-  return result
+export function sleep(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms))
 }
 
 /**
