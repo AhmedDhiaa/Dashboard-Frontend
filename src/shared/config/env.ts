@@ -62,14 +62,24 @@ const runtimeSchema = z
   })
 
 function parseEnv(): Env {
-  const result = envSchema.safeParse(process.env)
+  // A Docker/CI build-arg that is declared but unset arrives as "" (not
+  // undefined) — e.g. `--build-arg NEXT_PUBLIC_API_URL=`. An empty string
+  // fails `.url()`, and `.optional()`/`.default()` only cover `undefined`,
+  // so without this the `.parse()` below throws at module load and breaks
+  // `next build` page-data collection. Fold "" → undefined so the
+  // optional/default path applies and parsing never throws during a build.
+  const source = {
+    ...process.env,
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || undefined,
+  }
+  const result = envSchema.safeParse(source)
   if (!result.success) {
     const errors = result.error.issues.map(e => `  ${e.path.join(".")}: ${e.message}`).join("\n")
     console.warn(`\n⚠️  Environment variable warnings:\n${errors}\n`)
-    return envSchema.parse({
-      ...process.env,
-      NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL ?? DEV_API_FALLBACK,
-    })
+    // Last-resort parse: force the API URL to the (dev) fallback or undefined
+    // so module load never throws — build-time page-data collection depends
+    // on this never failing.
+    return envSchema.parse({ ...source, NEXT_PUBLIC_API_URL: DEV_API_FALLBACK || undefined })
   }
   return result.data
 }
