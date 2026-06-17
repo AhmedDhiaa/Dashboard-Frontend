@@ -12,6 +12,7 @@ import type { ColumnMetadata } from "@/ui/crud/renderers/table-column-factory"
 import type { DetailSection } from "@/core/crud/components/BaseDetailRenderer"
 import type { FilterField } from "@/shared/types/filters"
 import type { CRUDListParams } from "@/infra/api"
+import type { Page } from "@/shared/ports/backend"
 import type { EnumTypeName } from "@/core/enums"
 import type { EntityConfigFieldType } from "./field-types"
 
@@ -138,7 +139,7 @@ export interface EntityConfig<TEntity = Record<string, unknown>, TFormValues = P
 
   /** Service instance */
   service: {
-    getList: (params?: CRUDListParams) => Promise<{ items: TEntity[]; totalCount: number }>
+    getList: (params?: CRUDListParams) => Promise<Page<TEntity>>
     getById: (id: string | number) => Promise<TEntity>
     /**
      * create and update intentionally use `any` here.

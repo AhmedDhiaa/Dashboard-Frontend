@@ -11,6 +11,7 @@ import { Button } from "@/ui/design-system/primitives/button"
 import { Plus, Filter } from "lucide-react"
 import { useFilterDrawer, type FilterField } from "@/ui/application/FilterDrawer"
 import type { CRUDListParams } from "@/infra/api"
+import type { Page } from "@/shared/ports/backend"
 import { useNotification } from "@/ui/application"
 import { LazyDataTable } from "@/ui/data-table/components/lazy"
 import { cn } from "@/shared/utils"
@@ -19,7 +20,7 @@ import { logger } from "@/shared/logger"
 export interface CRUDListPageProps<TEntity extends { id: string | number }> {
   /** Service instance for API calls */
   service: {
-    getList: (params?: CRUDListParams) => Promise<{ items: TEntity[]; totalCount: number }>
+    getList: (params?: CRUDListParams) => Promise<Page<TEntity>>
     delete: (id: string) => Promise<void>
     /** Optional — when present, hovering a row prefetches its detail. */
     getById?: (id: string) => Promise<TEntity>
@@ -167,10 +168,10 @@ export function CRUDListPage<TEntity extends { id: string | number }>({
   const handleDelete = useCallback(
     (id: string) => {
       const queryKey = [entityName, "list", params]
-      const previous = queryClient.getQueryData<{ items: TEntity[]; totalCount: number }>(queryKey)
+      const previous = queryClient.getQueryData<Page<TEntity>>(queryKey)
 
       // Optimistically drop the row from the active list cache.
-      queryClient.setQueryData<{ items: TEntity[]; totalCount: number }>(queryKey, old =>
+      queryClient.setQueryData<Page<TEntity>>(queryKey, old =>
         old
           ? {
               ...old,
@@ -372,7 +373,9 @@ export function CRUDListPage<TEntity extends { id: string | number }>({
                     {icon}
                   </div>
                   <div className="min-w-0">
-                    <h1 className="text-lg md:text-xl font-semibold tracking-tight text-foreground truncate">{title}</h1>
+                    <h1 className="text-lg md:text-xl font-semibold tracking-tight text-foreground truncate">
+                      {title}
+                    </h1>
                     {description && (
                       <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider truncate">
                         {description}

@@ -5,7 +5,8 @@
  * Provides standardized methods for interacting with ABP backend
  */
 
-import { apiClient, type PaginatedResponse } from "./client"
+import { apiClient } from "./client"
+import type { Page } from "@/shared/ports/backend"
 import { logger } from "@/shared/logger"
 
 /**
@@ -64,7 +65,7 @@ export class BaseCRUDService<
   /**
    * Get paginated list of entities
    */
-  async getList(params?: CRUDListParams): Promise<PaginatedResponse<TEntity>> {
+  async getList(params?: CRUDListParams): Promise<Page<TEntity>> {
     logger.debug(`[${this.resourceName}] getList`, { params })
 
     // Normalize parameters to ABP format
@@ -119,7 +120,7 @@ export class BaseCRUDService<
       Object.assign(normalizedParams, rest)
     }
 
-    const response = await this.client.get<PaginatedResponse<TEntity>>(this.endpoint, {
+    const response = await this.client.get<Page<TEntity>>(this.endpoint, {
       params: normalizedParams,
       // Serialize arrays as repeated params: documentStatus=1&documentStatus=2
       paramsSerializer: p => {

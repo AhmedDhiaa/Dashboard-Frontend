@@ -14,6 +14,7 @@ import { isPublicPath } from "@/infra/auth/auth-constants"
 import { generateCorrelationId } from "@/shared/utils/correlation"
 import { errorReporter } from "@/infra/observability/error-reporter"
 import type { ExtendedSession } from "@/shared/types"
+import type { Page } from "@/shared/ports/backend"
 import { IS_MOCK } from "./mock"
 
 // ─── Lazy, memoized module references ────────────────────────────────────────
@@ -284,12 +285,7 @@ apiClient.interceptors.response.use(
     // the identical 403. Refreshing would only add a session round-trip and
     // a wasted request replay before the same failure. Let 403 fall straight
     // through to handleErrorRedirects → /403.
-    if (
-      typeof window !== "undefined" &&
-      error.response &&
-      error.response.status === 401 &&
-      !originalRequest._retry
-    ) {
+    if (typeof window !== "undefined" && error.response && error.response.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true
 
       try {
@@ -368,12 +364,12 @@ apiClient.interceptors.response.use(
 )
 
 /**
- * Paginated response structure from ABP backend
+ * Back-compat alias of `Page<T>` — the canonical list-result type now lives in
+ * `@/shared/ports`. Kept so existing `@/infra/api` and test consumers keep
+ * compiling during the backend-adapter migration; new code should import
+ * `Page` from `@/shared/ports`.
  */
-export interface PaginatedResponse<T> {
-  items: T[]
-  totalCount: number
-}
+export type PaginatedResponse<T> = Page<T>
 
 /**
  * Helper function to build query parameters

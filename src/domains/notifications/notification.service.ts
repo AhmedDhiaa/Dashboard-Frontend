@@ -1,4 +1,5 @@
 import { BaseCRUDService } from "@/infra/api/crud-service"
+import type { Page } from "@/shared/ports/backend"
 import type { NotificationFormValues, NotificationUpdateFormValues } from "./notification.schema"
 
 export interface Notification {
@@ -38,9 +39,7 @@ class NotificationService extends BaseCRUDService<Notification, NotificationForm
 
   // Add custom methods if needed
   async getCurrentList() {
-    const response = await this.client.get<{ items: Notification[]; totalCount: number }>(
-      `${this.endpoint}/current-list`,
-    )
+    const response = await this.client.get<Page<Notification>>(`${this.endpoint}/current-list`)
     return response.data
   }
 }
