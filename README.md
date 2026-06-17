@@ -58,7 +58,7 @@ An enterprise, **configuration-driven** admin dashboard for the Acme fleet/logis
 | **Files** | `exceljs` (export) · `react-dropzone` + `react-easy-crop` (uploads) |
 | **Observability** | Sentry `@sentry/nextjs` `10` + structured error reporter |
 | **Testing** | Vitest `4` + Testing Library + `vitest-axe` + MSW · Playwright (RTL screenshots) |
-| **Tooling** | ESLint `9` (+ custom plugin) · Prettier · Plop (scaffolding) · Husky + lint-staged + commitlint · standard-version |
+| **Tooling** | ESLint `9` (+ custom plugin) · Prettier · Plop (scaffolding) · Husky + lint-staged + commitlint · commit-and-tag-version |
 
 **Runtime:** Node `22+`, npm `10+`.
 
@@ -215,7 +215,7 @@ Validated by `src/shared/config/env.ts` (soft warning at load; **strict at serve
 | `check:dead-code` | Knip unused-export/file scan |
 | `analyze` | Bundle analyzer (`ANALYZE=true` build) |
 | `plop` | Scaffold an entity / feature / component / hook |
-| `release[:major\|minor\|patch]` | standard-version |
+| `release[:major\|minor\|patch]` | commit-and-tag-version |
 
 ---
 
