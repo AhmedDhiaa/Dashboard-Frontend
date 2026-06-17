@@ -25,7 +25,7 @@ jobs:
   image:
     name: Build & push image
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
 
@@ -58,7 +58,11 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          platforms: linux/amd64,linux/arm64
+          # amd64 only. Building linux/arm64 here runs under QEMU emulation on
+          # the amd64 runner, which made the emulated `next build` take ~25 min
+          # and pushed the job past its timeout. Re-add linux/arm64 only with a
+          # native arm64 runner (matrix or larger runner), never emulated.
+          platforms: linux/amd64
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
