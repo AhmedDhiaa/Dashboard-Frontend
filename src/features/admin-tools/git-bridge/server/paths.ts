@@ -67,7 +67,16 @@ export function normaliseRepoPath(repoRoot: string, p: string): string {
   // these through execFile's argv (not a string command), so even a
   // path like "foo; rm -rf /" is safe at the process boundary; this
   // helper exists for the allowlist check, not for shell escaping.
-  const abs = path.resolve(repoRoot, p)
+  //
+  // Treat backslashes as separators on EVERY OS. On Windows `path.sep`
+  // is "\\" so a Windows-style input resolves fine, but on POSIX (CI,
+  // production Linux) "\\" is a literal filename character — so
+  // "messages\\en\\x.json" would stay one segment and a backslash
+  // traversal ("..\\..\\evil") would slip past the allowlist. Folding
+  // "\\" → "/" up front makes normalisation and the traversal check
+  // identical and safe regardless of host OS.
+  const unified = p.replace(/\\/g, "/")
+  const abs = path.resolve(repoRoot, unified)
   const rel = path.relative(repoRoot, abs).split(path.sep).join("/")
   return rel
 }

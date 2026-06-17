@@ -109,7 +109,12 @@ ENV SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN SENTRY_ORG=$SENTRY_ORG SENTRY_PROJECT=$
 # Quality is enforced in CI (`npm run quality`). The image build skips
 # those checks to keep `docker build` fast — running them here would mean
 # every image build replays type-check/lint, which CI already did.
-RUN npm run init-entities && npx next build
+#
+# Use the webpack builder (matches `npm run build` and the CI "Production
+# build" job). The default Turbopack production build fails to collect page
+# data for some dynamic API routes (e.g. /api/admin/entities/[entityName]/
+# convert); webpack builds them cleanly, so we pin the same builder here.
+RUN npm run init-entities && npx next build --webpack
 
 # Stage the runtime tree the standalone server expects: server.js plus
 # the static assets next/image, font, and chunk requests resolve to.
