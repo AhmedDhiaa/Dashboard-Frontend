@@ -4,8 +4,8 @@
  * `<ResponsiveContainer>` initialises its size state to -1 and logs this
  * warning on its very first render frame — before its own ResizeObserver
  * measures the parent — once per chart, regardless of whether the parent has
- * a real box. `ChartFrame` already removes the *repeated* re-render thrash
- * (the chart mounts once, when measured), but this single inherent warning per
+ * a real box. Chart bodies are dynamic-imported and only mount once measured,
+ * so there's no repeated re-render thrash, but this single inherent warning per
  * chart still floods the console on a chart-heavy dashboard (~28 lines).
  *
  * This drops ONLY that exact message; every other console.warn passes through

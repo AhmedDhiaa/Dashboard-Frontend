@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "setup": "node scripts/setup.mjs",
     "init-entities": "tsx scripts/generate-entity-init.ts",
     "validate": "npm run init-entities && tsx scripts/validate-architecture.ts",
     "build": "npm run init-entities && npm run quality && next build --webpack && npm run check:leaked-secrets",
@@ -141,6 +142,10 @@
     "typescript": "^6.0.3",
     "vitest": "^4.1.5",
     "vitest-axe": "^0.1.0"
+  },
+  "optionalDependencies": {
+    "@upstash/redis": "^1.34.0",
+    "ioredis": "^5.4.1"
   },
   "description": "Modern, scalable Next.js application for business analytics and management.",
   "main": "tailwind.config.js",

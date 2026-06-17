@@ -39,6 +39,8 @@ interface DataTableProps<TData, TValue> {
   searchKey?: string
   searchPlaceholder?: string
   onRowClick?: (row: TData) => void
+  /** Fired on row hover — used to prefetch the row's detail so the click feels instant. */
+  onRowMouseEnter?: (row: TData) => void
   onRefresh?: () => void
   isLoading?: boolean
   pageSize?: number
@@ -91,6 +93,7 @@ const DataTableComponent = memo(function DataTable<TData, TValue>({
   searchKey,
   searchPlaceholder,
   onRowClick,
+  onRowMouseEnter,
   onRefresh,
   isLoading = false,
   pageSize: initialPageSize = 10,
@@ -288,6 +291,7 @@ const DataTableComponent = memo(function DataTable<TData, TValue>({
           columns={columns}
           isLoading={isLoading}
           onRowClick={onRowClick}
+          onRowMouseEnter={onRowMouseEnter}
           enableVirtualization={effectiveVirtualization}
           showPagination={showPagination}
           virtualRows={virtualRows}

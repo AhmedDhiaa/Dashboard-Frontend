@@ -11,8 +11,9 @@
 
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import { useRouter } from "next/navigation"
+import { useQuery } from "@tanstack/react-query"
 import { Card, CardContent, CardHeader, CardTitle, CardActionButton } from "@/ui/design-system/primitives/card"
 import { Button } from "@/ui/design-system/primitives/button"
 import { ArrowLeft, Edit, Trash2 } from "lucide-react"
@@ -57,32 +58,37 @@ export function CRUDDetailPage<TEntity extends { id: string | number }>({
   const t = useT("common")
   const notifications = useNotification()
   const { isOpen, setIsOpen, isLoading, config, showConfirm, handleConfirm } = useConfirmDialog()
-  const [entity, setEntity] = useState<TEntity | null>(null)
-  const [loading, setLoading] = useState(true)
 
+  // TanStack Query: the detail is cached under `[entity, "detail", id]`, so
+  // re-opening the same record (or returning from edit) is instant instead of
+  // re-spinning, and a list page can prefetch this exact key on row hover. A
+  // 404 is terminal (don't retry), every other failure retries twice.
+  const {
+    data: entity,
+    isPending: loading,
+    error,
+  } = useQuery({
+    queryKey: [entityName, "detail", id],
+    queryFn: () => service.getById(id),
+    retry: (failureCount, err) => {
+      const status = (err as { response?: { status?: number } })?.response?.status
+      if (status === 404) return false
+      return failureCount < 2
+    },
+  })
+
+  // 404 → bounce to the list (the record was deleted/never existed); any other
+  // error → toast + back. Lives in an effect so the redirect runs after render.
   useEffect(() => {
-    const loadEntity = async () => {
-      try {
-        setLoading(true)
-        const data = await service.getById(id)
-        setEntity(data)
-      } catch (error: unknown) {
-        // Check for 404 — redirect to the list page rather than showing an error toast
-        const status = (error as { response?: { status?: number } })?.response?.status
-        if (status === 404) {
-          router.replace(backRoute || `/${entityName}`)
-          return
-        }
-        notifications.error(error)
-        router.push(backRoute || `/${entityName}`)
-      } finally {
-        setLoading(false)
-      }
+    if (!error) return
+    const status = (error as { response?: { status?: number } })?.response?.status
+    if (status === 404) {
+      router.replace(backRoute || `/${entityName}`)
+      return
     }
-
-    loadEntity()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id, service, entityName, backRoute])
+    notifications.error(error)
+    router.push(backRoute || `/${entityName}`)
+  }, [error, router, entityName, backRoute, notifications])
 
   const handleDelete = () => {
     showConfirm(

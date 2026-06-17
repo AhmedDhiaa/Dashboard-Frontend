@@ -36,11 +36,19 @@ export function sleep(ms: number): Promise<void> {
 }
 
 /**
- * Format a date to ISO string without time
+ * Read a value from a nested object by a dot-path (e.g. "a.b.c"). Returns
+ * undefined for a missing segment, a non-object root, or a path that tries to
+ * descend into an array. Single source for excel export + detail rendering.
  */
-export function formatDateISO(date: Date | string): string {
-  const d = typeof date === "string" ? new Date(date) : date
-  return d.toISOString().split("T")[0] ?? ""
+export function getNestedValue(obj: unknown, path: string): unknown {
+  if (!obj || typeof obj !== "object") return undefined
+  if (!path.includes(".")) return (obj as Record<string, unknown>)[path]
+  return path.split(".").reduce<unknown>((acc, key) => {
+    if (acc && typeof acc === "object" && !Array.isArray(acc) && key in acc) {
+      return (acc as Record<string, unknown>)[key]
+    }
+    return undefined
+  }, obj)
 }
 
 /**

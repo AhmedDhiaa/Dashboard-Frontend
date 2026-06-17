@@ -13,6 +13,7 @@ import {
 } from "@/ui/design-system/primitives/dropdown-menu"
 import { signOut, useSession } from "next-auth/react"
 import { cn } from "@/shared/utils"
+import { getInitials } from "@/shared/utils/avatar"
 import { useLayout } from "./LayoutContext"
 import { useT } from "@/shared/config"
 import { NAV_GROUPS } from "@/shared/config/navigation"
@@ -118,12 +119,7 @@ export function Header() {
   const userName = session?.user?.name || t("common.app.name")
   // ... rest of logic remains same
   const userEmail = session?.user?.email || "admin@acme.com"
-  const userInitials = userName
-    .split(" ")
-    .map(n => n.charAt(0))
-    .join("")
-    .toUpperCase()
-    .slice(0, 2)
+  const userInitials = getInitials(userName)
 
   return (
     <header className="relative z-10 shrink-0 bg-card border-b border-border">

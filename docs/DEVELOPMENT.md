@@ -442,6 +442,7 @@ the layout new users see before they customise.
 
 ## Where to go next
 
+- **Patterns & conventions** (form-field contract, gotchas with regression tests) → [`docs/PATTERNS.md`](PATTERNS.md).
 - **API surface** the wizards POST against → [`docs/API-REFERENCE.md`](API-REFERENCE.md).
 - **Day-2 admin work** (translations, theming, draft management) → [`docs/ADMIN-TOOLS.md`](ADMIN-TOOLS.md).
 - **Production runbooks** → [`docs/runbooks/`](runbooks/) (next-auth rollback, Sentry verification, security headers, deploy hygiene, deploy CD, incident response).

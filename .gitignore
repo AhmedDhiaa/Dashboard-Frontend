@@ -51,3 +51,6 @@ messages/_overrides/
 *.swp
 *.swo
 *~
+
+# Local Claude Code config (not shared)
+.claude/

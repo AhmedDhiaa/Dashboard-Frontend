@@ -4,17 +4,11 @@
  */
 
 import type { ValidationError } from "@/shared/types"
+// Single source of truth lives in shared/utils/file.ts; re-exported here so
+// existing `@/core/forms/utils` importers keep working.
+import { formatFileSize } from "@/shared/utils/file"
 
-/**
- * Format File Size
- */
-export function formatFileSize(bytes: number): string {
-  if (bytes === 0) return "0 Bytes"
-  const k = 1024
-  const sizes = ["Bytes", "KB", "MB", "GB"]
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
-  return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + " " + sizes[i]
-}
+export { formatFileSize }
 
 /**
  * Validate File Upload

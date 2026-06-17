@@ -19,7 +19,7 @@ import { setupGlobalErrorHandlers, QueryProvider } from "@/infra/api"
 import { logger } from "@/shared/logger"
 // Side-effect: drops recharts' inherent "width(-1)/height(-1)" first-frame dev
 // warning (one per chart) that otherwise floods the console on chart-heavy
-// pages. ChartFrame handles the real re-render thrash; this handles the noise.
+// pages. Purely console noise — the chart bodies themselves render fine.
 import "@/shared/widgets/silence-recharts-resize-warning"
 
 // Initialize entity configs synchronously at module load — registers lazy

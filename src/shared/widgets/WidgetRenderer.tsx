@@ -2,14 +2,16 @@
 
 /**
  * Generic widget renderer — single component that can mount any widget
- * defined by a WidgetBuilderSchema. Used both by:
- *   • the wizard's preview pane (with mock or live-fetched data), and
- *   • the live dashboard canvas (where data fetching is driven by the
- *     widget's refresh policy).
+ * defined by a WidgetBuilderSchema. Today it drives the widget wizard's
+ * preview pane (with mock or live-fetched data); it's written to also back
+ * a live dashboard canvas once that surface lands, where data fetching
+ * would be driven by the widget's refresh policy.
  *
  * Rendering is dispatched on visualization.type. Every visual variant is
  * a small inline component so dropping in a new variant only adds one
- * branch — no router, no factory, no plugin layer.
+ * branch — no router, no factory, no plugin layer. Note: the `map` variant
+ * renders a marker-count preview, not a live map (see MapBody) — wiring the
+ * real map provider into a widget cell is a follow-up.
  */
 
 import { useMemo } from "react"
@@ -204,18 +206,17 @@ function MapBody({
   visualization: Extract<WidgetBuilderSchema["visualization"], { type: "map" }>
   data: Row[]
 }) {
-  // The full map renderer uses Google Maps via @googlemaps/js-api-loader,
-  // which is heavy and async-imports an external script. Inside a widget
-  // grid we render a static placeholder showing the marker count + the
-  // configured zoom; live map rendering is a follow-up that swaps this
-  // body for the real loader once the canvas can defer it.
+  // A live map (LeafletMapProvider) pulls in the map runtime + tiles, which
+  // is heavy for a single grid cell. Until a widget cell can defer that, we
+  // render an explicit *preview*: the marker count + configured zoom, clearly
+  // labelled so it never reads as a map that failed to load.
   const valid = data.filter(r => {
     const pos = r[visualization.positionField]
     return pos && typeof pos === "object" && typeof (pos as { lat?: unknown }).lat === "number"
   })
   return (
     <div className="h-full w-full rounded-md border border-dashed border-border flex flex-col items-center justify-center text-xs text-muted-foreground">
-      <span className="font-mono">map</span>
+      <span className="font-medium">Map preview</span>
       <span>
         {valid.length} markers · zoom {visualization.defaultZoom}
       </span>

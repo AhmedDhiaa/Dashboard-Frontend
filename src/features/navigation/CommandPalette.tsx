@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, useCallback } from "react"
 import { useRouter } from "next/navigation"
+import { signOut } from "next-auth/react"
 import { useTranslations } from "next-intl"
 import { LayoutDashboard, Settings, LogOut, Plus, Clock, Loader2 } from "lucide-react"
 
@@ -273,7 +274,16 @@ export function CommandPalette() {
             <Settings className="me-2 h-4 w-4" />
             <span>{t("nav.settings")}</span>
           </CommandItem>
-          <CommandItem onSelect={() => run(() => {})}>
+          <CommandItem
+            onSelect={() =>
+              run(() => {
+                // Mirror SidebarChrome: navigate to login first so the screen
+                // swaps at once, then clear the session in the background.
+                router.push("/auth/login")
+                void signOut({ redirect: false })
+              })
+            }
+          >
             <LogOut className="me-2 h-4 w-4" />
             <span>{t("nav.logout") || "Logout"}</span>
           </CommandItem>

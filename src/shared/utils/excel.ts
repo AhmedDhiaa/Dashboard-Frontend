@@ -16,6 +16,7 @@
  */
 
 import type ExcelJSNamespace from "exceljs"
+import { getNestedValue } from "./general"
 
 export interface ExcelColumn {
   header: string
@@ -30,16 +31,6 @@ export interface ExcelExportOptions<T = Record<string, unknown>> {
   data: T[]
   autoFilter?: boolean
   freezeHeader?: boolean
-}
-
-function getNestedValue(obj: unknown, path: string): unknown {
-  if (!obj || typeof obj !== "object") return undefined
-  return path.split(".").reduce((current: unknown, key: string) => {
-    if (current && typeof current === "object" && key in current) {
-      return (current as Record<string, unknown>)[key]
-    }
-    return undefined
-  }, obj)
 }
 
 function formatCellValue(value: unknown): string | number | boolean {

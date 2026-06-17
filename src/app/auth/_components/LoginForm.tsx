@@ -6,6 +6,7 @@
 "use client"
 
 import type React from "react"
+import Link from "next/link"
 import { Button } from "@/ui/design-system/primitives/button"
 import { Alert, AlertDescription } from "@/ui/design-system/primitives/alert"
 import { Loader2, AlertCircle, User } from "lucide-react"
@@ -94,6 +95,15 @@ export function LoginForm({
             showLabel={t("show_password")}
             hideLabel={t("hide_password")}
           />
+
+          <div className="flex justify-end">
+            <Link
+              href="/auth/forgot-password"
+              className="text-sm font-medium text-primary transition-colors hover:text-primary/80 hover:underline"
+            >
+              {t("forgot.link")}
+            </Link>
+          </div>
         </div>
 
         <Button

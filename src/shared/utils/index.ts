@@ -5,7 +5,7 @@ export * from "./file"
 export * from "./excel"
 
 // Export general utilities
-export { cn, formatDateISO, isPathActive, slugify, sleep } from "./general"
+export { cn, getNestedValue, isPathActive, slugify, sleep } from "./general"
 
 // Export image utilities
 export * from "./image-cropping"

@@ -88,12 +88,22 @@ async function probeStorage(): Promise<CheckStatus> {
 
 export async function GET() {
   const [backend, storage] = await Promise.all([probeBackend(), probeStorage()])
-  const allOk = backend === "ok" && storage === "ok"
+
+  // Readiness gates on `backend` ONLY — that is what determines whether this
+  // instance can serve traffic. `storage` is reported but ADVISORY: a hardened
+  // read-only-rootfs deploy (k8s `readOnlyRootFilesystem`, or an override volume
+  // that isn't mounted) legitimately can't write `messages/_overrides/`, yet the
+  // app serves every page fine — only admin i18n/theme override *writes* are
+  // unavailable. Failing readiness there would pull a healthy pod from the load
+  // balancer. So: backend down → 503 "down"; backend up but storage down →
+  // 200 "degraded" (serving, admin-writes disabled); both up → 200 "ok".
+  const ready = backend === "ok"
+  const status = ready ? (storage === "ok" ? "ok" : "degraded") : "down"
 
   return NextResponse.json(
-    { status: allOk ? "ok" : "degraded", checks: { backend, storage } },
+    { status, checks: { backend, storage } },
     {
-      status: allOk ? 200 : 503,
+      status: ready ? 200 : 503,
       headers: { "Cache-Control": "no-store, no-cache, must-revalidate" },
     },
   )

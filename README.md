@@ -4,7 +4,7 @@
 [![React](https://img.shields.io/badge/React-19-61DAFB?logo=react)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-6-blue?logo=typescript)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-38B2AC?logo=tailwind-css)](https://tailwindcss.com/)
-[![Tests](https://img.shields.io/badge/tests-1500%2B%20passing-success)](#-testing)
+[![Tests](https://img.shields.io/badge/tests-1600%2B%20passing-success)](#-testing)
 ![License](https://img.shields.io/badge/License-Proprietary-red.svg)
 
 An enterprise, **configuration-driven** admin dashboard for the Acme fleet/logistics + delivery **ERP**. It is the web control plane for an **ABP Framework** backend (`https://api.example.com`) — orders, vehicles, stock, invoices, payments, loyalty, tickets, HR/work-sessions, geography, and reports — with live tracking over SignalR, an interactive map engine, a runtime entity/page builder, and a live theme customizer. Fully bilingual (English / العربية) with first-class RTL.
@@ -105,7 +105,7 @@ src/
 │   ├── entities/            # EntityConfig types, registry, generated init.ts
 │   ├── enums/               # ABP enum loader (/api/app/enum/*)
 │   └── forms/               # schema-driven form renderer
-├── domains/                 # 14 domain groups · 54 entity configs (config+service+schema+types)
+├── domains/                 # your entity configs (config+service+schema+types) — scales to any number; 8 worked examples ship
 │   ├── business/            #   order, business-partner
 │   ├── inventory/           #   item, brand, category, unit, price-list, stock-*, warehouse, …
 │   ├── finance/             #   payment, receive, currency, wallet-top-up
@@ -141,7 +141,7 @@ src/
 
 ## ✨ Features
 
-- **Config-driven CRUD** for 54 entities (list / detail / edit / create) with server search (`Term`/`Filter`), sorting, multi-select filters, optimistic delete + undo.
+- **Config-driven CRUD** — add any number of entities from one typed config each (list / detail / edit / create) with server search (`Term`/`Filter`), sorting, multi-select filters, optimistic delete + undo. Ships with **8 worked example entities**; the engine has no entity-count ceiling.
 - **Orders workflow** — create → assign → schedule → track → cancel → archive.
 - **Live tracking & maps** — provider-agnostic map engine with marker clustering; real-time driver/ticket updates over a single auto-reconnecting SignalR connection.
 - **Dashboard & KPIs** — count tiles + order-on-map KPI.
@@ -161,19 +161,18 @@ src/
 # 1. install
 npm install
 
-# 2. environment (copies .env.example if missing)
-setup-env.bat        # Windows
-./setup-env.sh       # macOS / Linux
-#   then fill in NEXT_PUBLIC_API_URL, AUTH_SECRET/NEXTAUTH_SECRET (≥32 chars),
-#   OAuth2 client id/secret/issuer (see below)
+# 2. set up .env (copies .env.example, generates a secure AUTH_SECRET).
+#    Standalone demo (no backend, demo / demo123 login):
+npm run setup
+#    …or wire a real backend in one go (mock mode auto-off):
+npm run setup -- --name "My App" --api-url https://api.example.com --client-id Api_App
 
-# 3. generate the entity registry
-npm run init-entities
-
-# 4. run
+# 3. run
 npm run dev          # custom tsx server.ts (Turbopack) on http://localhost:3000
 # npm run dev:next   # alternative: plain next dev --turbopack
 ```
+
+> 🚀 New here? **[docs/GETTING-STARTED.md](docs/GETTING-STARTED.md)** walks you from clone → rebrand → first entity → deploy in minutes.
 
 ---
 
@@ -261,7 +260,7 @@ Always finish with `npm run quality` green.
 
 ## 🧪 Testing
 
-- **Unit/integration** — Vitest + Testing Library + `vitest-axe` (a11y) + MSW. **1,500+ tests** across 144 files. `npm test` / `npm run test:coverage`.
+- **Unit/integration** — Vitest + Testing Library + `vitest-axe` (a11y) + MSW. **1,600+ tests** across 150 files. `npm test` / `npm run test:coverage`.
 - **E2E** — Playwright RTL screenshot regression (`npm run test:e2e:rtl`).
 
 ---

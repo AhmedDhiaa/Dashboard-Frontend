@@ -21,6 +21,8 @@ export interface CRUDListPageProps<TEntity extends { id: string | number }> {
   service: {
     getList: (params?: CRUDListParams) => Promise<{ items: TEntity[]; totalCount: number }>
     delete: (id: string) => Promise<void>
+    /** Optional — when present, hovering a row prefetches its detail. */
+    getById?: (id: string) => Promise<TEntity>
   }
   /** Table column definitions */
   columns: ColumnDef<TEntity>[]
@@ -198,6 +200,26 @@ export function CRUDListPage<TEntity extends { id: string | number }>({
     [entityName, params, service, queryClient, notifications],
   )
 
+  // Prefetch a row's detail on hover so the click into it is instant. Cached
+  // under the SAME key the detail page reads (`[entity, "detail", id]`),
+  // deduped and skipped while still fresh — so sweeping the mouse across the
+  // table costs at most one fetch per distinct row.
+  const handleRowPrefetch = useCallback(
+    // The table hands rows back as the loose row shape; we only need `id`.
+    (row: Record<string, unknown>) => {
+      const getById = service.getById
+      const id = row.id
+      if (!getById || id == null) return
+      const idStr = String(id)
+      void queryClient.prefetchQuery({
+        queryKey: [entityName, "detail", idStr],
+        queryFn: () => getById(idStr),
+        staleTime: 30_000,
+      })
+    },
+    [entityName, service, queryClient],
+  )
+
   // Add delete handler to columns if not already present
   const enhancedColumns = useMemo(() => {
     return columns.map(col => {
@@ -282,6 +304,7 @@ export function CRUDListPage<TEntity extends { id: string | number }>({
               searchKey={searchKey}
               searchPlaceholder={searchPlaceholder || `${t("common.search")} ${title.toLowerCase()}...`}
               onRefresh={() => void refetch()}
+              onRowMouseEnter={handleRowPrefetch}
               onSearchChange={setSearchKey}
               onPaginationChange={(pageIndex, size) => {
                 setPageNumber(pageIndex)

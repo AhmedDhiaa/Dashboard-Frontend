@@ -10,6 +10,7 @@
  */
 
 import React from "react"
+import { getNestedValue } from "@/shared/utils"
 import {
   FieldRenderer,
   type FieldRendererType,
@@ -208,16 +209,6 @@ function DetailFieldItem({
       </div>
     </div>
   )
-}
-
-function getNestedValue(obj: Record<string, unknown>, path: string): unknown {
-  if (!path.includes(".")) return obj[path]
-  return path.split(".").reduce<unknown>((acc, part) => {
-    if (acc && typeof acc === "object" && !Array.isArray(acc)) {
-      return (acc as Record<string, unknown>)[part]
-    }
-    return undefined
-  }, obj)
 }
 
 function autoDetectFieldType(fieldName: string, value: unknown): FieldRendererType {

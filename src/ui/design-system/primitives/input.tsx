@@ -44,7 +44,13 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(({ className, type,
   const styles = resolveStyles(componentId, {}, settings?.components?.[componentId]?.elements)
   const inline = resolveInlineStyles(componentId, settings?.components?.[componentId]?.elements)
 
-  const value = props.value === null || props.value === undefined ? "" : props.value
+  // Normalize a *controlled* value (null/undefined → "") so a controlled
+  // input never silently flips to uncontrolled. But when the caller passes
+  // no `value` prop at all, the field is uncontrolled (defaultValue / ref);
+  // forcing value="" there would make it read-only and fire React's
+  // "you provided a `value` prop without an `onChange` handler" warning. So
+  // only inject `value` when the caller is actually controlling the field.
+  const isControlled = "value" in props
 
   return (
     <input
@@ -66,7 +72,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(({ className, type,
       ref={ref}
       aria-invalid={error}
       {...props}
-      value={value}
+      {...(isControlled ? { value: props.value ?? "" } : {})}
     />
   )
 })

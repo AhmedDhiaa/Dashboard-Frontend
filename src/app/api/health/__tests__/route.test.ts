@@ -17,7 +17,7 @@ import { join } from "node:path"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 type HealthBody = {
-  status: "ok" | "degraded"
+  status: "ok" | "degraded" | "down"
   checks: { backend: "ok" | "fail"; storage: "ok" | "fail" }
 }
 
@@ -81,7 +81,7 @@ describe("GET /api/health", () => {
     const res = await callRoute()
     expect(res.status).toBe(503)
     const body = await jsonBody(res)
-    expect(body.status).toBe("degraded")
+    expect(body.status).toBe("down")
     expect(body.checks.backend).toBe("fail")
   })
 
@@ -121,7 +121,9 @@ describe("GET /api/health", () => {
     }
   })
 
-  it("returns 503 with storage:'fail' when messages/_overrides is unwritable", async () => {
+  it("stays READY (200 'degraded') when storage is unwritable but the backend is up", async () => {
+    // Storage is advisory: a read-only-rootfs deploy can't write the override
+    // volume, but the app still serves — so readiness must NOT 503 on it.
     fetchSpy.mockResolvedValue(new Response("{}", { status: 200 }))
     // Pre-create the overrides path AS A FILE so mkdir({recursive}) fails
     // with EEXIST/ENOTDIR — same trick used in the audit-storage tests.
@@ -129,8 +131,9 @@ describe("GET /api/health", () => {
     writeFileSync(join(sandbox, "messages", "_overrides"), "i am a file")
 
     const res = await callRoute()
-    expect(res.status).toBe(503)
+    expect(res.status).toBe(200)
     const body = await jsonBody(res)
+    expect(body.status).toBe("degraded")
     expect(body.checks.backend).toBe("ok")
     expect(body.checks.storage).toBe("fail")
   })
@@ -145,7 +148,7 @@ describe("GET /api/health", () => {
     expect(entries).toEqual([])
   })
 
-  it("returns degraded with both checks failing when both go down at once", async () => {
+  it("returns 503 'down' when the backend is unreachable (regardless of storage)", async () => {
     fetchSpy.mockRejectedValue(new Error("net down"))
     mkdirSync(join(sandbox, "messages"), { recursive: true })
     writeFileSync(join(sandbox, "messages", "_overrides"), "i am a file")
@@ -153,7 +156,7 @@ describe("GET /api/health", () => {
     const res = await callRoute()
     expect(res.status).toBe(503)
     expect(await jsonBody(res)).toEqual({
-      status: "degraded",
+      status: "down",
       checks: { backend: "fail", storage: "fail" },
     })
   })

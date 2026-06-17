@@ -11,7 +11,7 @@ The SignalR tracking hooks provide an easy, clean way to connect to real-time tr
 Track ticket messages in real-time.
 
 ```typescript
-import { useTicketTracking } from '@/lib/socket';
+import { useTicketTracking } from '@/infra/socket';
 
 function TicketDetailPage({ ticketId }: { ticketId: string }) {
   const {
@@ -47,7 +47,7 @@ function TicketDetailPage({ ticketId }: { ticketId: string }) {
 Track order status and driver location updates.
 
 ```typescript
-import { useOrderTracking } from '@/lib/socket';
+import { useOrderTracking } from '@/infra/socket';
 
 function OrderTrackingPage({ orderId }: { orderId: string }) {
   const {
@@ -88,7 +88,7 @@ function OrderTrackingPage({ orderId }: { orderId: string }) {
 Track all active drivers on a live map.
 
 ```typescript
-import { useDriverTracking } from '@/lib/socket';
+import { useDriverTracking } from '@/infra/socket';
 
 function LiveDriverMap() {
   const {
@@ -127,7 +127,7 @@ function LiveDriverMap() {
 For custom tracking scenarios.
 
 ```typescript
-import { useGroupTracking } from '@/lib/socket';
+import { useGroupTracking } from '@/infra/socket';
 
 function CustomTracking() {
   const { join, leave, isInGroup } = useGroupTracking({

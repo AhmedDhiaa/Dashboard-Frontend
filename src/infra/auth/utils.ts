@@ -6,6 +6,7 @@
  */
 
 import { auth } from "@/infra/auth/server"
+import { getInitials } from "@/shared/utils/avatar"
 import type { User, ExtendedSession } from "@/shared/types"
 
 /**
@@ -47,15 +48,11 @@ export function getUserDisplayName(user: User | null | undefined): string {
 }
 
 /**
- * Get user initials for avatar
+ * Get user initials for avatar. Delegates to the shared `getInitials` so the
+ * name→initials rule has one source of truth.
  */
 export function getUserInitials(user: User | null | undefined): string {
-  const name = getUserDisplayName(user)
-  return name
-    .split(" ")
-    .map(part => part[0]?.toUpperCase())
-    .join("")
-    .slice(0, 2)
+  return getInitials(getUserDisplayName(user))
 }
 
 /**

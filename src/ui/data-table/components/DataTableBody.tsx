@@ -16,6 +16,8 @@ interface DataTableBodyProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   isLoading: boolean
   onRowClick?: (row: TData) => void
+  /** Fired on row hover — used to prefetch the row's detail so the click is instant. */
+  onRowMouseEnter?: (row: TData) => void
   enableVirtualization: boolean
   showPagination: boolean
   virtualRows: Array<{ index: number; start: number; size: number }>
@@ -38,6 +40,7 @@ export function DataTableBody<TData, TValue>({
   columns,
   isLoading,
   onRowClick,
+  onRowMouseEnter,
   enableVirtualization,
   showPagination,
   virtualRows,
@@ -56,6 +59,7 @@ export function DataTableBody<TData, TValue>({
       <TableRow
         data-state={row.getIsSelected() && "selected"}
         onClick={() => (renderSubComponent ? row.toggleExpanded() : onRowClick?.(row.original))}
+        onMouseEnter={() => onRowMouseEnter?.(row.original)}
         className={cn(
           "smooth-transition",
           onRowClick || renderSubComponent ? "cursor-pointer" : "",

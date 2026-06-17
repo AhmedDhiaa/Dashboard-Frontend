@@ -27,7 +27,11 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(({ classNa
   const styles = resolveStyles(componentId, {}, settings?.components?.[componentId]?.elements)
   const inline = resolveInlineStyles(componentId, settings?.components?.[componentId]?.elements)
 
-  const value = props.value === null || props.value === undefined ? "" : props.value
+  // Only inject a controlled `value` when the caller actually passes one.
+  // Forcing value="" on an uncontrolled textarea (defaultValue / ref) makes
+  // it read-only and fires React's "value prop without onChange" warning.
+  // See the matching note in input.tsx.
+  const isControlled = "value" in props
 
   return (
     <textarea
@@ -52,7 +56,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(({ classNa
       ref={ref}
       aria-invalid={error}
       {...props}
-      value={value}
+      {...(isControlled ? { value: props.value ?? "" } : {})}
     />
   )
 })

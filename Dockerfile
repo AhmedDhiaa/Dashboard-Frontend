@@ -58,6 +58,54 @@ COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 
+# ─── Public (client-inlined) config — MUST be present at BUILD time ──────────
+# Next inlines every `NEXT_PUBLIC_*` value into the client bundle during
+# `next build`. Injecting them at `docker run` is a NO-OP for the browser, so
+# they have to arrive as `--build-arg`s here. Pass them per-environment in CI:
+#   docker build \
+#     --build-arg NEXT_PUBLIC_API_URL=https://api.example.com \
+#     --build-arg NEXT_PUBLIC_CLIENT_ID=Api_App ...
+# Defaults keep `docker build` working with no args (it just produces a
+# placeholder image). `NEXT_PUBLIC_USE_MOCK_API` defaults to "false" so a
+# bare prod image never ships mock-wired.
+ARG NEXT_PUBLIC_API_URL=
+ARG NEXT_PUBLIC_SOCKET_URL=
+ARG NEXT_PUBLIC_CLIENT_ID=
+ARG NEXT_PUBLIC_BRAND_DOMAIN=example.com
+ARG NEXT_PUBLIC_APP_NAME=Acme
+ARG NEXT_PUBLIC_MAP_PROVIDER=leaflet
+ARG NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=
+ARG NEXT_PUBLIC_SENTRY_DSN=
+ARG NEXT_PUBLIC_SENTRY_ENVIRONMENT=
+ARG NEXT_PUBLIC_SENTRY_RELEASE=
+ARG NEXT_PUBLIC_ENABLE_CHAT=true
+ARG NEXT_PUBLIC_ENABLE_MAPS=true
+ARG NEXT_PUBLIC_RUNTIME_BACKEND=server
+ARG NEXT_PUBLIC_LOG_LEVEL=info
+ARG NEXT_PUBLIC_USE_MOCK_API=false
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL \
+    NEXT_PUBLIC_SOCKET_URL=$NEXT_PUBLIC_SOCKET_URL \
+    NEXT_PUBLIC_CLIENT_ID=$NEXT_PUBLIC_CLIENT_ID \
+    NEXT_PUBLIC_BRAND_DOMAIN=$NEXT_PUBLIC_BRAND_DOMAIN \
+    NEXT_PUBLIC_APP_NAME=$NEXT_PUBLIC_APP_NAME \
+    NEXT_PUBLIC_MAP_PROVIDER=$NEXT_PUBLIC_MAP_PROVIDER \
+    NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=$NEXT_PUBLIC_GOOGLE_MAPS_API_KEY \
+    NEXT_PUBLIC_SENTRY_DSN=$NEXT_PUBLIC_SENTRY_DSN \
+    NEXT_PUBLIC_SENTRY_ENVIRONMENT=$NEXT_PUBLIC_SENTRY_ENVIRONMENT \
+    NEXT_PUBLIC_SENTRY_RELEASE=$NEXT_PUBLIC_SENTRY_RELEASE \
+    NEXT_PUBLIC_ENABLE_CHAT=$NEXT_PUBLIC_ENABLE_CHAT \
+    NEXT_PUBLIC_ENABLE_MAPS=$NEXT_PUBLIC_ENABLE_MAPS \
+    NEXT_PUBLIC_RUNTIME_BACKEND=$NEXT_PUBLIC_RUNTIME_BACKEND \
+    NEXT_PUBLIC_LOG_LEVEL=$NEXT_PUBLIC_LOG_LEVEL \
+    NEXT_PUBLIC_USE_MOCK_API=$NEXT_PUBLIC_USE_MOCK_API
+
+# Sentry source-map upload happens at build time (gated on the auth token).
+# Without it, production stack traces stay minified/unsymbolicated.
+ARG SENTRY_AUTH_TOKEN=
+ARG SENTRY_ORG=
+ARG SENTRY_PROJECT=
+ENV SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN SENTRY_ORG=$SENTRY_ORG SENTRY_PROJECT=$SENTRY_PROJECT
+
 # Quality is enforced in CI (`npm run quality`). The image build skips
 # those checks to keep `docker build` fast — running them here would mean
 # every image build replays type-check/lint, which CI already did.
@@ -78,6 +126,11 @@ ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV PORT=3000
 ENV HOSTNAME=0.0.0.0
+# The standalone runtime uses Next's generated server.js, NOT the custom
+# server.ts — so server.ts's `maxHeaderSize: 32768` is lost here. ABP JWT
+# session cookies can exceed Node's 16 KB default and trigger HTTP 431, so
+# restore the larger ceiling at the runtime level.
+ENV NODE_OPTIONS="--max-http-header-size=32768"
 
 # Non-root user. Numeric IDs match Next.js's documented convention so
 # Kubernetes runAsUser / runAsGroup tooling can target them deterministically.

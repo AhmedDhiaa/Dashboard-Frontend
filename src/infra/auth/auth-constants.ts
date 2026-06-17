@@ -11,7 +11,14 @@
 // ─── Public Paths ────────────────────────────────────────────────────────────
 
 /** Routes that do not require authentication (used by client-side guards) */
-export const PUBLIC_PATHS = ["/auth/login", "/auth/session-expired", "/403", "/404"] as const
+export const PUBLIC_PATHS = [
+  "/auth/login",
+  "/auth/forgot-password",
+  "/auth/reset-password",
+  "/auth/session-expired",
+  "/403",
+  "/404",
+] as const
 
 /**
  * Routes that bypass middleware auth entirely (includes API, static assets).
