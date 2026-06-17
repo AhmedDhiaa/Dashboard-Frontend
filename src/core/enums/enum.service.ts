@@ -4,26 +4,20 @@
  * Service layer for fetching enum values from the API
  */
 
-import { apiClient } from "@/infra/api/client"
-import { logger } from "@/shared/logger"
+import type { EnumPort } from "@/shared/ports/backend"
+import { abpEnumPort } from "@/infra/api/adapters/abp/enum.adapter"
 import type { EnumValue, EnumTypeName } from "./enum.types"
 
-export async function fetchEnumValues(enumType: EnumTypeName): Promise<EnumValue[]> {
-  try {
-    const response = await apiClient.get<EnumValue[]>(`/api/app/enum/${enumType}`)
-    return response.data
-  } catch (error) {
-    logger.error(`[EnumService] Failed to fetch enum: ${enumType}`, error)
-    throw error
-  }
-}
-
 /**
- * Enum service with caching
+ * Enum service with caching. The actual fetch lives behind an `EnumPort`
+ * (default: the ABP adapter), so the backend can be swapped without touching
+ * the cache layer, the provider, or the hooks.
  */
 class EnumService {
   private cache: Map<string, EnumValue[]> = new Map()
   private pendingRequests: Map<string, Promise<EnumValue[]>> = new Map()
+
+  constructor(private readonly backend: EnumPort = abpEnumPort) {}
 
   /**
    * Get enum values with caching
@@ -39,8 +33,8 @@ class EnumService {
       return this.pendingRequests.get(enumType)!
     }
 
-    // Fetch and cache
-    const request = fetchEnumValues(enumType)
+    // Fetch and cache (via the backend port)
+    const request = this.backend.getEnumValues(enumType)
     this.pendingRequests.set(enumType, request)
 
     try {

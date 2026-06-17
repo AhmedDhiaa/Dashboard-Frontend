@@ -121,15 +121,18 @@ export interface ConfigPort {
 
 // ─── Enums ──────────────────────────────────────────────────────────────────
 
-/** Neutral enum value (the adapter maps its backend's enum payload to this). */
+/**
+ * Enum value as the app consumes it (structurally matches `core/enums`'
+ * `EnumValue`). The adapter maps its backend's enum payload to this shape.
+ */
 export interface EnumValueDTO {
   id: number
   /** Primary display name. */
   name: string
-  /** Secondary/localized name (e.g. the AR label in the current bilingual setup). */
-  foreignName?: string
+  /** Secondary/localized name (the AR label in the current bilingual setup). */
+  foreignName: string
   code?: string
-  localization?: { name?: string }
+  localization?: { name: string; value: string }
 }
 
 export interface EnumPort {
