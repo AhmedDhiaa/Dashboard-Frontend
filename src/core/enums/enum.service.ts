@@ -5,7 +5,7 @@
  */
 
 import type { EnumPort } from "@/shared/ports/backend"
-import { abpEnumPort } from "@/infra/api/adapters/abp/enum.adapter"
+import { enumPort } from "@/infra/api/backend"
 import type { EnumValue, EnumTypeName } from "./enum.types"
 
 /**
@@ -17,7 +17,7 @@ class EnumService {
   private cache: Map<string, EnumValue[]> = new Map()
   private pendingRequests: Map<string, Promise<EnumValue[]>> = new Map()
 
-  constructor(private readonly backend: EnumPort = abpEnumPort) {}
+  constructor(private readonly backend: EnumPort = enumPort) {}
 
   /**
    * Get enum values with caching

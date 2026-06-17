@@ -1,6 +1,6 @@
 import NextAuth, { CredentialsSignin, type NextAuthConfig } from "next-auth"
 import Credentials from "next-auth/providers/credentials"
-import { abpAuthPort } from "@/infra/api/adapters/abp/auth.adapter"
+import { authPort } from "@/infra/api/backend"
 import { config } from "@/shared/config"
 import { logger } from "@/shared/logger"
 import type { ExtendedJWT, ExtendedSession, ExtendedUser } from "@/shared/types"
@@ -152,7 +152,7 @@ async function performRefresh(extendedToken: ExtendedJWT): Promise<ExtendedJWT> 
   const refreshPromise = (async (): Promise<ExtendedJWT> => {
     try {
       logger.info("JWT: Refreshing expiring token...")
-      const refreshed = await abpAuthPort.refresh(refreshKey)
+      const refreshed = await authPort.refresh(refreshKey)
 
       return {
         ...extendedToken,
@@ -201,7 +201,7 @@ export const authConfig: NextAuthConfig = {
           logger.info(
             `[AUTH-FLOW] 3.1. Calling ABP OAuth2 login endpoint at: ${config.api.baseUrl || process.env.NEXT_PUBLIC_API_URL}`,
           )
-          const tokenSet = await abpAuthPort.login({
+          const tokenSet = await authPort.login({
             username: credentials.username as string,
             password: credentials.password as string,
           })
