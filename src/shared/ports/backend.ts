@@ -21,27 +21,27 @@
 
 // ─── List / pagination (transport-neutral) ──────────────────────────────────
 
-/** One sort directive. The adapter encodes it for its backend (ABP → "field dir"). */
-export interface SortSpec {
-  field: string
-  direction: "asc" | "desc"
-}
-
 /**
- * Neutral list request. The ABP adapter maps these to `skipCount` /
- * `maxResultCount` / `Sorting` / `Term`|`Filter` / repeated filter params.
+ * List/search parameters. Relocated here from `infra/api` so consumers depend on
+ * the port, not the transport. NOTE: it still carries the current
+ * (ABP-influenced) field vocabulary (`pageNumber`/`skipCount`/`searchKey`/
+ * `sorting`/`term`); a later refinement may neutralize the shape and let the
+ * adapter own the encoding. Behavior is unchanged for now.
  */
-export interface ListParams {
-  /** Zero-based page index (adapter converts to skip/offset). */
-  page?: number
-  /** Items per page. */
+export interface CRUDListParams {
+  pageNumber?: number
   pageSize?: number
-  /** Free-text search term. */
-  search?: string
-  /** Ordering, applied in order. */
-  sort?: SortSpec[]
-  /** Backend-neutral structured filters (field → value | values). */
-  filters?: Record<string, unknown>
+  searchKey?: string
+  sortBy?: string
+  sortDirection?: "asc" | "desc"
+  skipCount?: number
+  maxResultCount?: number
+  sorting?: string
+  term?: string
+  /** Override the search param name (default "Term"; Role uses "Filter"). */
+  searchParam?: string
+  /** Allow any custom filters to be passed through, including multi-select arrays. */
+  [key: string]: string | number | boolean | (string | number)[] | undefined
 }
 
 /**
@@ -62,7 +62,7 @@ export interface Page<T> {
  * backend resolves it however it likes.
  */
 export interface EntityService<TEntity, TCreate = Partial<TEntity>, TUpdate = Partial<TEntity>> {
-  list(params?: ListParams): Promise<Page<TEntity>>
+  list(params?: CRUDListParams): Promise<Page<TEntity>>
   getById(id: string | number): Promise<TEntity>
   create(data: TCreate): Promise<TEntity>
   update(id: string | number, data: TUpdate): Promise<TEntity>

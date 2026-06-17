@@ -6,27 +6,12 @@
  */
 
 import { apiClient } from "./client"
-import type { Page } from "@/shared/ports/backend"
+import type { Page, CRUDListParams } from "@/shared/ports/backend"
 import { logger } from "@/shared/logger"
 
-/**
- * Parameters for list/search operations
- */
-export interface CRUDListParams {
-  pageNumber?: number
-  pageSize?: number
-  searchKey?: string
-  sortBy?: string
-  sortDirection?: "asc" | "desc"
-  skipCount?: number
-  maxResultCount?: number
-  sorting?: string
-  term?: string
-  /** Override the ABP search param name (default "Term"; Role uses "Filter"). */
-  searchParam?: string
-  /** Allow any custom filters to be passed to the API, including multi-select arrays */
-  [key: string]: string | number | boolean | (string | number)[] | undefined
-}
+// The canonical definition now lives in the port; re-exported so existing
+// `@/infra/api` consumers keep working during the backend-adapter migration.
+export type { CRUDListParams }
 
 /**
  * Configuration for CRUD service
