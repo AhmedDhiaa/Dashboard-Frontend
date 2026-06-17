@@ -9,7 +9,7 @@
  * @module infra/auth/application-config.service
  */
 
-import { apiClient } from "@/infra/api"
+import { fetchApplicationConfigurationFromAbp } from "@/infra/api/adapters/abp/config.adapter"
 import type { ApplicationConfiguration } from "@/shared/types/application-config.types"
 import { logger } from "@/shared/logger"
 import { APP_CONFIG_CACHE_TTL_MS } from "./auth-constants"
@@ -66,11 +66,7 @@ export async function fetchApplicationConfiguration(
 
   _inflightRequest = (async () => {
     try {
-      const response = await apiClient.get<ApplicationConfiguration>("/api/abp/application-configuration", {
-        params: { IncludeLocalizationResources: includeLocalizationResources },
-      })
-
-      const data = response.data
+      const data = await fetchApplicationConfigurationFromAbp(includeLocalizationResources)
 
       // Only write to cache if no invalidation occurred while we were fetching
       if (_cacheToken === tokenAtLaunch) {
