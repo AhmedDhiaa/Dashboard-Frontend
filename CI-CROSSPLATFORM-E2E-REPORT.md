@@ -79,9 +79,30 @@ not infrastructure problems:
 Forcing them into a required gate would mean a permanently-red check or suppressing
 failures with `continue-on-error` — both explicitly disallowed.
 
-### 2.3 Recommended follow-up (concrete recipe to make E2E gate)
+### 2.3 Prototype attempt + the blocker found
 
-A focused, separate task — roughly in this order:
+I built the correct harness — a `setup` project that logs into mock mode and saves
+`storageState`, a small smoke spec written against the *real* current UI, and a
+self-contained `webServer` (mock mode). Local validation surfaced a deeper,
+**app-level** blocker that puts authed E2E beyond a CI-config task:
+
+- The login page gates the form behind `useSession()` `status === "loading"`
+  (`useLoginSessionSync` → `isSessionLoading`). In the **Playwright-spawned mock-dev
+  server**, that status never resolved — the form stayed behind the
+  "verifying session…" spinner for 60s+ (it resolves fine in the normal dev/preview
+  server). So `#username` never mounts and the scripted login can't proceed.
+- Injecting NextAuth env (`AUTH_SECRET` / `NEXTAUTH_URL` / `AUTH_TRUST_HOST`) into the
+  spawned server to try to settle the session instead made the server **fail to boot**.
+
+Conclusion: reliable authed E2E needs **app-level investigation** of why the mock-mode
+login flow doesn't settle in a spawned server (NextAuth session resolution under the
+custom `server.ts` in mock mode) — not just test wiring. The prototype was **reverted**
+to keep the change set clean and avoid regressing the existing `test:e2e:rtl` workflow.
+
+### 2.4 Recommended path (when picked up)
+
+A focused, separate task — roughly in this order (the prototype validated step 1–2 as
+the right shape; the blocker above must be solved first):
 
 1. **Auth via `storageState`, not an env cookie.** Add a Playwright `setup` project that
    logs into the mock app (`demo/demo`), waits for the post-login redirect, and saves
@@ -107,7 +128,7 @@ A focused, separate task — roughly in this order:
 | --- | --- | --- |
 | 1 | `ci.yml` valid YAML; `test` job runs `[ubuntu-latest, windows-latest]` | ✅ |
 | 2 | `npx vitest run` passes on Windows (proves the Windows leg) | ✅ 1613/1613 |
-| 3 | E2E suite passes against mock mode | ❌ **Specs drifted from UI** (§2.2) — not faked; recipe in §2.3 |
+| 3 | E2E suite passes against mock mode | ❌ **Blocked** — legacy specs drifted (§2.2) and the prototyped authed harness hit an app-level blocker: mock-dev login doesn't settle in a spawned server (§2.3). Not faked; path in §2.4 |
 | 4 | `npx -y npm@10 ci …` → exit 0 (lock valid) | ✅ no dep/lock change this task |
 | 5 | Existing gates unaffected (`quality`, `next build --webpack`) | ✅ unchanged |
 | 6 | Any Windows source fix is real + documented | ✅ none needed (unit suite already cross-platform after the earlier git-bridge fix) |
