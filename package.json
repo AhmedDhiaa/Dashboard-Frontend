@@ -41,7 +41,7 @@
     "clean": "rm -rf .next node_modules/.cache",
     "clean:all": "rm -rf .next node_modules",
     "quality": "npm run type-check && npm run lint && npm run validate && npm run check:next-auth-pin && npm run check:leaked-secrets && npm run check:codegen-flag && npm run check:i18n-parity && npm run check:i18n-usage && npm run check:rsc-boundaries && npm run check:swagger-drift && npm run check:color-fn",
-    "prepare": "husky",
+    "prepare": "husky || true",
     "release": "commit-and-tag-version",
     "release:major": "commit-and-tag-version --release-as major",
     "release:minor": "commit-and-tag-version --release-as minor",

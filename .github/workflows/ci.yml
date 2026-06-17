@@ -69,7 +69,12 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
-      - run: npm ci
+      # NODE_ENV=production (job env) would otherwise make `npm ci` omit
+      # devDependencies — but `next build` needs them (typescript, tailwind,
+      # postcss, react-compiler). --include=dev forces them in, same as the
+      # Dockerfile. It also keeps husky present so the prepare script is a
+      # no-op under HUSKY=0 instead of "command not found".
+      - run: npm ci --include=dev
       # `quality` already ran in its own job — build only (init-entities + next build),
       # then re-check leaked secrets against the produced client bundle.
       - run: npm run init-entities
