@@ -81,8 +81,8 @@ export interface Credentials {
 export interface TokenSet {
   accessToken: string
   refreshToken?: string
-  /** Seconds until `accessToken` expires. */
-  expiresIn: number
+  /** Seconds until `accessToken` expires (absent → the caller's default lifetime). */
+  expiresIn?: number
 }
 
 /** Backend-neutral identity, derived by the adapter from its profile/config call. */
@@ -96,12 +96,15 @@ export interface BackendUser {
   permissions: string[]
 }
 
+/**
+ * Authentication token grants. Profile/permission loading and account recovery
+ * stay separate for now (they're entangled with the NextAuth session + the
+ * permission model) — a later sub-phase folds them in via ConfigPort + a
+ * `getProfile` method.
+ */
 export interface AuthPort {
   login(credentials: Credentials): Promise<TokenSet>
   refresh(refreshToken: string): Promise<TokenSet>
-  getProfile(accessToken: string): Promise<BackendUser>
-  requestPasswordReset(email: string): Promise<void>
-  resetPassword(input: { userId: string; resetToken: string; password: string }): Promise<void>
 }
 
 // ─── Application config (permissions / settings / features) ──────────────────

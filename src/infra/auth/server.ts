@@ -1,6 +1,6 @@
 import NextAuth, { CredentialsSignin, type NextAuthConfig } from "next-auth"
 import Credentials from "next-auth/providers/credentials"
-import { login, refreshToken } from "@/infra/auth/oauth2.service"
+import { abpAuthPort } from "@/infra/api/adapters/abp/auth.adapter"
 import { config } from "@/shared/config"
 import { logger } from "@/shared/logger"
 import type { ExtendedJWT, ExtendedSession, ExtendedUser } from "@/shared/types"
@@ -109,11 +109,11 @@ function slimUserForJWT(user: ExtendedUser): ExtendedUser {
 
 // Helper to create user session from token response
 async function createUserSession(
-  tokenResponse: { access_token: string; refresh_token: string; expires_in?: number },
+  tokenSet: { accessToken: string; refreshToken?: string; expiresIn?: number },
   username: string,
 ) {
-  const expires_at = Date.now() + (tokenResponse.expires_in ?? DEFAULT_TOKEN_LIFETIME_SECONDS) * 1000
-  const userProfile = await fetchUserProfile(tokenResponse.access_token)
+  const expires_at = Date.now() + (tokenSet.expiresIn ?? DEFAULT_TOKEN_LIFETIME_SECONDS) * 1000
+  const userProfile = await fetchUserProfile(tokenSet.accessToken)
 
   // Join name and surName if available
   const fullName = userProfile ? [userProfile.name, userProfile.surName].filter(Boolean).join(" ") : null
@@ -122,10 +122,10 @@ async function createUserSession(
     id: userProfile?.id || username,
     name: fullName || userProfile?.userName || username,
     email: userProfile?.email || username,
-    accessToken: tokenResponse.access_token,
-    refreshToken: tokenResponse.refresh_token,
+    accessToken: tokenSet.accessToken,
+    refreshToken: tokenSet.refreshToken,
     expires_at,
-    expires_in: tokenResponse.expires_in,
+    expires_in: tokenSet.expiresIn,
     user: userProfile
       ? {
           ...userProfile,
@@ -152,13 +152,13 @@ async function performRefresh(extendedToken: ExtendedJWT): Promise<ExtendedJWT> 
   const refreshPromise = (async (): Promise<ExtendedJWT> => {
     try {
       logger.info("JWT: Refreshing expiring token...")
-      const refreshed = await refreshToken({ refresh_token: refreshKey })
+      const refreshed = await abpAuthPort.refresh(refreshKey)
 
       return {
         ...extendedToken,
-        accessToken: refreshed.access_token,
-        refreshToken: refreshed.refresh_token ?? extendedToken.refreshToken,
-        expires_at: Date.now() + (refreshed.expires_in ?? DEFAULT_TOKEN_LIFETIME_SECONDS) * 1000,
+        accessToken: refreshed.accessToken,
+        refreshToken: refreshed.refreshToken ?? extendedToken.refreshToken,
+        expires_at: Date.now() + (refreshed.expiresIn ?? DEFAULT_TOKEN_LIFETIME_SECONDS) * 1000,
         error: undefined,
       }
     } catch (error) {
@@ -201,18 +201,18 @@ export const authConfig: NextAuthConfig = {
           logger.info(
             `[AUTH-FLOW] 3.1. Calling ABP OAuth2 login endpoint at: ${config.api.baseUrl || process.env.NEXT_PUBLIC_API_URL}`,
           )
-          const tokenResponse = await login({
+          const tokenSet = await abpAuthPort.login({
             username: credentials.username as string,
             password: credentials.password as string,
           })
 
-          if (!tokenResponse.access_token) {
+          if (!tokenSet.accessToken) {
             logger.warn("[AUTH-FLOW] 3.2. ABP Login failed: No access token in response.")
             return null
           }
 
           logger.info("[AUTH-FLOW] 3.3. ABP Login successful, fetching user profile...")
-          const userSession = await createUserSession(tokenResponse, credentials.username as string)
+          const userSession = await createUserSession(tokenSet, credentials.username as string)
           logger.info("[AUTH-FLOW] 3.4. Authorize hook complete, user session created.")
           return userSession
         } catch (err) {
