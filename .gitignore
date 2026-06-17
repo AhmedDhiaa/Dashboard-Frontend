@@ -54,3 +54,6 @@ messages/_overrides/
 
 # Local Claude Code config (not shared)
 .claude/
+
+# Generated SBOM (run `npm run sbom`); produced on demand / in CI, not committed
+sbom.cyclonedx.json

@@ -39,14 +39,25 @@ jobs:
       # type-check, lint, validate (architecture), next-auth-pin, leaked-secrets,
       # codegen-flag, i18n-parity, i18n-usage, rsc-boundaries, swagger-drift, color-fn
       - run: npm run quality
-      - name: Dependency audit (high+ severity)
+      # Blocking gate: production dependencies must carry no high/critical
+      # advisories. Prod high/critical count is zero (see
+      # SECURITY-HARDENING-REPORT.md); residual advisories, if any, are
+      # moderate-or-below and tracked there. devDependencies are excluded
+      # (--omit=dev) because they never ship to users.
+      - name: Dependency audit (prod, high+ severity)
         run: npm audit --omit=dev --audit-level=high
-        continue-on-error: true
 
   test:
     name: Unit tests
-    runs-on: ubuntu-latest
+    # Run on Linux AND Windows: several prior production bugs were OS-specific
+    # (e.g. Windows-only path handling that broke on Linux CI). The dev box is
+    # Windows, CI default is Linux — testing both keeps the suite green on each.
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

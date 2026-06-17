@@ -1,0 +1,73 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    "helpers:pinGitHubActionDigests",
+    ":dependencyDashboard",
+    ":semanticCommits",
+    ":prHourlyLimit2",
+    ":prConcurrentLimit10"
+  ],
+  "timezone": "Etc/UTC",
+  "schedule": ["before 6am on monday"],
+  "labels": ["dependencies"],
+  "rangeStrategy": "bump",
+  "minimumReleaseAge": "3 days",
+  "configMigration": true,
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": ["before 6am on the first day of the month"]
+  },
+  "vulnerabilityAlerts": {
+    "labels": ["security"],
+    "minimumReleaseAge": null
+  },
+  "osvVulnerabilityAlerts": true,
+  "packageRules": [
+    {
+      "description": "Group and conservatively automerge patch/minor updates of devDependencies only.",
+      "matchDepTypes": ["devDependencies"],
+      "matchUpdateTypes": ["patch", "minor"],
+      "groupName": "devDependencies (non-major)",
+      "automerge": true,
+      "automergeType": "pr",
+      "platformAutomerge": true
+    },
+    {
+      "description": "Group production dependency patch/minor updates, but require manual review/merge.",
+      "matchDepTypes": ["dependencies", "optionalDependencies"],
+      "matchUpdateTypes": ["patch", "minor"],
+      "groupName": "production dependencies (non-major)",
+      "automerge": false
+    },
+    {
+      "description": "Group GitHub Actions updates and automerge non-major.",
+      "matchManagers": ["github-actions"],
+      "matchUpdateTypes": ["patch", "minor", "digest"],
+      "groupName": "github-actions",
+      "automerge": true,
+      "platformAutomerge": true
+    },
+    {
+      "description": "Never automerge any major upgrade; always open a standalone PR for review.",
+      "matchUpdateTypes": ["major"],
+      "automerge": false,
+      "dependencyDashboardApproval": true
+    },
+    {
+      "description": "next-auth is pinned to an exact v5 beta and guarded by check:next-auth-pin; do not propose bumps automatically.",
+      "matchPackageNames": ["next-auth"],
+      "enabled": false
+    },
+    {
+      "description": "Keep @types/node aligned with the pinned Node 22 runtime (engines: node >=22 <23).",
+      "matchPackageNames": ["@types/node"],
+      "allowedVersions": "<23"
+    },
+    {
+      "description": "Do not let Renovate move the engines pin off Node 22 / npm 10; that is changed deliberately, not by automation.",
+      "matchDepTypes": ["engines"],
+      "enabled": false
+    }
+  ]
+}
