@@ -105,6 +105,22 @@ describe("GET /api/health", () => {
     expect(fetchSpy).not.toHaveBeenCalled()
   })
 
+  it("reports backend:'ok' WITHOUT a fetch in standalone mock mode", async () => {
+    // In mock mode there is no upstream to reach — every request is served
+    // from seeded data — so the probe must not 503 (which would pull the
+    // container out of the LB pool forever) and must not even attempt a fetch.
+    process.env.NEXT_PUBLIC_USE_MOCK_API = "true"
+    try {
+      const res = await callRoute()
+      expect(res.status).toBe(200)
+      const body = await jsonBody(res)
+      expect(body).toEqual({ status: "ok", checks: { backend: "ok", storage: "ok" } })
+      expect(fetchSpy).not.toHaveBeenCalled()
+    } finally {
+      delete process.env.NEXT_PUBLIC_USE_MOCK_API
+    }
+  })
+
   it("returns 503 with storage:'fail' when messages/_overrides is unwritable", async () => {
     fetchSpy.mockResolvedValue(new Response("{}", { status: 200 }))
     // Pre-create the overrides path AS A FILE so mkdir({recursive}) fails

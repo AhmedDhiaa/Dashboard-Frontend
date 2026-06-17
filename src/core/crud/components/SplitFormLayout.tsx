@@ -13,10 +13,8 @@ export interface SplitFormLayoutProps {
   rightWidth?: string
   /** Gap between columns (default: "1.5rem") */
   gap?: string
-  /** Stack vertically on mobile (default: true) */
+  /** Stack vertically below the `md` (768px) breakpoint (default: true) */
   stackOnMobile?: boolean
-  /** Breakpoint for mobile stacking (default: "768px") */
-  mobileBreakpoint?: string
 }
 
 /**
@@ -40,39 +38,25 @@ export function SplitFormLayout({
   rightContent,
   leftWidth = "70%",
   rightWidth = "30%",
+  gap = "1.5rem",
   stackOnMobile = true,
-  mobileBreakpoint = "768px",
 }: SplitFormLayoutProps) {
   return (
     <div
       className="split-form-layout w-full"
+      // The column template lives in globals.css (.split-form-layout), keyed
+      // off these inline CSS vars + the `data-no-stack` attribute — no
+      // styled-jsx / CSS-in-JS. See `src/app/globals.css`.
+      data-no-stack={stackOnMobile ? undefined : "true"}
       style={
         {
           display: "grid",
-          // Passing values as CSS variables for the style tag to use
+          gap,
           "--left-width": leftWidth,
           "--right-width": rightWidth,
         } as React.CSSProperties & { [key: string]: string | number }
       }
     >
-      <style jsx>{`
-        .split-form-layout {
-          grid-template-columns: minmax(0, 1fr);
-        }
-        @media (min-width: ${mobileBreakpoint}) {
-          .split-form-layout {
-            grid-template-columns: minmax(0, var(--left-width)) minmax(0, var(--right-width));
-          }
-        }
-        ${!stackOnMobile
-          ? `
-          .split-form-layout {
-            grid-template-columns: minmax(0, var(--left-width)) minmax(0, var(--right-width)) !important;
-          }
-        `
-          : ""}
-      `}</style>
-
       {/* Left Column - Form Fields with Premium Card */}
       <div className="split-form-left">
         <div className="p-2">

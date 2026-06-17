@@ -98,10 +98,14 @@ export function SocketProvider({ children }: SocketProviderProps) {
 
   // Connect / disconnect based on NextAuth session token
   useEffect(() => {
-    // Standalone mock mode has no backend — there is no SignalR hub to reach
-    // (the socket URL would resolve to the frontend origin and 404 on negotiate).
-    // Skip all connection attempts entirely.
-    if (IS_MOCK) return
+    // Standalone mock mode has no real hub, but the mock socket connects
+    // instantly (no network) and emits synthetic realtime events, so live
+    // tracking works on seeded data. Connect once and reflect the state.
+    if (IS_MOCK) {
+      void socket.connect().catch(() => {})
+      updateState()
+      return
+    }
 
     if (status === "loading") return
 
@@ -118,7 +122,7 @@ export function SocketProvider({ children }: SocketProviderProps) {
         socket.disconnect().catch(() => {})
       }
     }
-  }, [status, accessToken, initializeConnection])
+  }, [status, accessToken, initializeConnection, updateState])
 
   // Subscription to state changes
   useEffect(() => {

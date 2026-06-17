@@ -376,13 +376,18 @@ function buildConnectSrc(): string {
     "'self'",
     "https://maps.googleapis.com",
     "https://nominatim.openstreetmap.org",
-    "wss:",
-    "ws:",
   ])
   const add = (url?: string) => {
     if (!url) return
     try {
-      origins.add(new URL(url).origin)
+      const u = new URL(url)
+      // The http(s) origin covers the SignalR negotiate handshake and any
+      // plain XHR. Add the matching ws(s) origin for the WebSocket upgrade —
+      // scoped to the configured host instead of a blanket `ws:`/`wss:`, which
+      // would have let the page open a socket to ANY origin and undercut the
+      // exfiltration protection the nonce'd script-src buys.
+      origins.add(u.origin)
+      origins.add(`${u.protocol === "https:" ? "wss:" : "ws:"}//${u.host}`)
     } catch {
       /* ignore malformed env */
     }

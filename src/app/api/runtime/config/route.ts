@@ -1,7 +1,8 @@
 /**
  * Runtime builder config — entities + pages + dashboards.
  *
- *   GET /api/runtime/config        – returns the full config (public read).
+ *   GET /api/runtime/config        – returns the full config; auth-gated
+ *                                    (any signed-in user, not the public).
  *   PUT /api/runtime/config        – replace the full config; admin-gated.
  *
  * PUT bumps the global version counter; clients polling /api/runtime/version
@@ -11,7 +12,7 @@
 import { NextResponse, type NextRequest } from "next/server"
 import { logger } from "@/shared/logger"
 import { readConfig, writeConfig, type RuntimeConfig } from "../_lib/storage"
-import { requireRuntimeManager } from "../_lib/auth"
+import { requireRuntimeConfigReader, requireRuntimeManager } from "../_lib/auth"
 
 export const dynamic = "force-dynamic"
 export const runtime = "nodejs"
@@ -39,6 +40,9 @@ function validateConfig(body: unknown): { ok: true; config: RuntimeConfig } | { 
 }
 
 export async function GET(): Promise<NextResponse> {
+  const guard = await requireRuntimeConfigReader()
+  if (!guard.ok) return guard.response
+
   try {
     const config = await readConfig()
     return NextResponse.json(config, {

@@ -15,6 +15,25 @@ import type { EntityOverrideMap } from "./overrides/schema"
  */
 const ENTITY_CONFIGS: EntityConfigRegistry = {}
 
+// ─── Registration change notifier ────────────────────────────────────────────
+// Configs register asynchronously (lazy `import()` → `registerEntityConfig`).
+// Consumers (`useEntityConfig`) subscribe here so they reliably re-render the
+// moment their config lands — without it, a consumer whose async `LOADED`
+// dispatch is dropped under render churn never re-reads the registry and its
+// page freezes on a skeleton forever.
+const REGISTRY_LISTENERS = new Set<() => void>()
+
+export function subscribeToRegistry(listener: () => void): () => void {
+  REGISTRY_LISTENERS.add(listener)
+  return () => {
+    REGISTRY_LISTENERS.delete(listener)
+  }
+}
+
+function notifyRegistryListeners(): void {
+  REGISTRY_LISTENERS.forEach(fn => fn())
+}
+
 /**
  * Override map applied on top of every `getEntityConfig` lookup.
  *
@@ -58,6 +77,7 @@ export function registerEntityConfig<TEntity = unknown, TFormValues = unknown>(
   }
 
   ENTITY_CONFIGS[config.entityName] = config
+  notifyRegistryListeners()
 }
 
 /**
@@ -277,8 +297,13 @@ const validateFieldOrderConsistency: ConfigValidator = (config, _errors, warning
     warnings.push(`formFieldOrder contains fields not in formFields: ${missingFields.join(", ")}`)
   }
 
-  // Check for fields in formFields that aren't in order
-  const unorderedFields = fieldKeys.filter(key => !orderKeys.includes(key))
+  // Check for fields in formFields that aren't in order. Fields the config
+  // explicitly lists in `excludeFields` (e.g. the hidden ABP `concurrencyStamp`
+  // token — present in formFields so it round-trips on submit, but excluded
+  // from the rendered form) legitimately have no place in formFieldOrder, so
+  // they don't count as "unordered".
+  const excluded = new Set(config.excludeFields ?? [])
+  const unorderedFields = fieldKeys.filter(key => !orderKeys.includes(key) && !excluded.has(key))
   if (unorderedFields.length > 0) {
     warnings.push(`formFields contains fields not in formFieldOrder: ${unorderedFields.join(", ")}`)
   }

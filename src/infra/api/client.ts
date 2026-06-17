@@ -40,10 +40,48 @@ const getServerAuth = () => {
 // Read the access token straight from the NextAuth session. Calling
 // `getSession()` re-runs the server-side `jwt` callback, which is the only
 // place tokens are refreshed. There is no parallel client refresh path.
-async function getSessionAccessToken(): Promise<{ token: string | null; error: string | undefined }> {
-  const { getSession } = await getNextAuthReact()
-  const session = (await getSession()) as ExtendedSession | null
-  return { token: session?.accessToken ?? null, error: session?.error }
+//
+// `getSession()` hits `/api/auth/session` on every call. A data-heavy page
+// firing N parallel XHRs would otherwise serialize N identical session
+// round-trips in front of its requests. We guard that two ways:
+//   • in-flight dedupe — concurrent callers share one `getSession()` promise;
+//   • a short TTL cache — sequential callers within `SESSION_CACHE_TTL_MS`
+//     reuse the last result. The window is tiny relative to the token's 8 h
+//     lifetime and 60 s pre-expiry refresh buffer, so it can never serve a
+//     token that should already have been refreshed.
+// The 401 retry path passes `{ force: true }` to bypass both and pull a
+// freshly-refreshed token from the jwt callback.
+type SessionToken = { token: string | null; error: string | undefined }
+
+const SESSION_CACHE_TTL_MS = 3_000
+let cachedSessionToken: { value: SessionToken; at: number } | null = null
+let inflightSessionToken: Promise<SessionToken> | null = null
+
+async function getSessionAccessToken({ force = false }: { force?: boolean } = {}): Promise<SessionToken> {
+  if (force) {
+    cachedSessionToken = null
+    inflightSessionToken = null
+  } else {
+    if (cachedSessionToken && Date.now() - cachedSessionToken.at < SESSION_CACHE_TTL_MS) {
+      return cachedSessionToken.value
+    }
+    if (inflightSessionToken) return inflightSessionToken
+  }
+
+  const fetchToken = (async (): Promise<SessionToken> => {
+    const { getSession } = await getNextAuthReact()
+    const session = (await getSession()) as ExtendedSession | null
+    const value: SessionToken = { token: session?.accessToken ?? null, error: session?.error }
+    cachedSessionToken = { value, at: Date.now() }
+    return value
+  })()
+
+  if (!force) inflightSessionToken = fetchToken
+  try {
+    return await fetchToken
+  } finally {
+    if (inflightSessionToken === fetchToken) inflightSessionToken = null
+  }
 }
 
 /**
@@ -233,23 +271,29 @@ apiClient.interceptors.response.use(
   async (error: AxiosError<{ message?: string; errors?: unknown; resource?: string }>) => {
     const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean }
 
-    // 401/403 → ask NextAuth for the session again. The server-side jwt
+    // 401 → ask NextAuth for the session again. The server-side jwt
     // callback re-evaluates `expires_at`, runs the OAuth refresh grant if
     // needed, and returns a fresh access token. Concurrent 401s end up
     // sharing a single refresh because the jwt callback dedups in-flight
     // refreshes by refresh_token. We retry once; if the second token is
     // still missing or the session reports RefreshAccessTokenError, the
     // error falls through to handleErrorRedirects → login redirect.
+    //
+    // 403 is deliberately NOT refreshed: in ABP a 403 means the
+    // *authenticated* user lacks the permission, so a fresh token returns
+    // the identical 403. Refreshing would only add a session round-trip and
+    // a wasted request replay before the same failure. Let 403 fall straight
+    // through to handleErrorRedirects → /403.
     if (
       typeof window !== "undefined" &&
       error.response &&
-      (error.response.status === 401 || error.response.status === 403) &&
+      error.response.status === 401 &&
       !originalRequest._retry
     ) {
       originalRequest._retry = true
 
       try {
-        const { token: newToken, error: sessionError } = await getSessionAccessToken()
+        const { token: newToken, error: sessionError } = await getSessionAccessToken({ force: true })
         if (newToken && !sessionError && originalRequest.headers) {
           originalRequest.headers.Authorization = `Bearer ${newToken}`
           return apiClient(originalRequest)

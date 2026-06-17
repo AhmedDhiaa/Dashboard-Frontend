@@ -8,11 +8,19 @@
  */
 
 import { useMemo } from "react"
-import { Bar, BarChart, CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
+import dynamic from "next/dynamic"
 import type { RuntimeEntity, RuntimeRecord, RuntimeWidget } from "../types"
 import { useRuntimeConfig, useRuntimeList } from "../store"
 import { Card, CardContent, CardHeader, CardTitle } from "@/ui/design-system/primitives/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/design-system/primitives/table"
+
+// Recharts (~85 KB gz) is dynamic-imported so it stays out of this route's
+// first-load bundle and never runs on the server. KPI/table widgets never
+// trigger the chunk.
+const DashboardChartBody = dynamic(() => import("./DashboardChartBody"), {
+  ssr: false,
+  loading: () => <div className="h-[220px] w-full animate-pulse rounded-md bg-muted" />,
+})
 
 export function DashboardView({ dashboardId }: { dashboardId: string }) {
   const config = useRuntimeConfig()
@@ -185,7 +193,6 @@ function ChartWidget({ widget, entity }: { widget: RuntimeWidget; entity: Runtim
     )
   }
 
-  const ChartImpl = widget.config?.chartType === "line" ? LineChart : BarChart
   return (
     <Card>
       <CardHeader>
@@ -193,19 +200,7 @@ function ChartWidget({ widget, entity }: { widget: RuntimeWidget; entity: Runtim
       </CardHeader>
       <CardContent>
         <div style={{ width: "100%", height: 220 }}>
-          <ResponsiveContainer>
-            <ChartImpl data={data}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" tick={{ fontSize: 11 }} />
-              <YAxis tick={{ fontSize: 11 }} />
-              <Tooltip />
-              {widget.config?.chartType === "line" ? (
-                <Line type="monotone" dataKey="value" stroke="var(--primary)" strokeWidth={2} />
-              ) : (
-                <Bar dataKey="value" fill="var(--primary)" radius={[4, 4, 0, 0]} />
-              )}
-            </ChartImpl>
-          </ResponsiveContainer>
+          <DashboardChartBody data={data} chartType={widget.config?.chartType} />
         </div>
       </CardContent>
     </Card>

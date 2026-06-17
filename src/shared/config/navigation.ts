@@ -60,6 +60,9 @@ export const NAV_GROUPS: readonly NavGroup[] = [
     icon: MapPin,
     items: [
       { titleKey: "nav.examples", href: "/example", requiredPermission: "Api.Example" },
+      // Live fleet map — demonstrates the SignalR realtime layer end-to-end.
+      // No permission gate: works for any authenticated user (and in mock mode).
+      { titleKey: "nav.tracking", href: "/tracking" },
     ],
   },
   {

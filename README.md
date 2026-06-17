@@ -9,7 +9,9 @@
 
 An enterprise, **configuration-driven** admin dashboard for the Acme fleet/logistics + delivery **ERP**. It is the web control plane for an **ABP Framework** backend (`https://api.example.com`) — orders, vehicles, stock, invoices, payments, loyalty, tickets, HR/work-sessions, geography, and reports — with live tracking over SignalR, an interactive map engine, a runtime entity/page builder, and a live theme customizer. Fully bilingual (English / العربية) with first-class RTL.
 
-> **Scope:** the dashboard covers all 50 web-facing API modules (54 entity configs). The ~33 `Mobile*` API tags are the field-app surface and intentionally have no dashboard UI.
+> **Scope:** the *product* the engine targets covers all 50 web-facing API modules (54 entity configs); the ~33 `Mobile*` API tags are the field-app surface and intentionally have no dashboard UI.
+>
+> **What this copy actually ships:** this is a trimmed, self-contained **template** distribution — it bundles **8 example entity configs** (`connection`, `enum`, `example`, `notification`, `role`, `ticket`, `user`, `user-otp`) across 6 domain groups, enough to exercise every layer of the engine (CRUD, builders, permissions, i18n, theming) end-to-end in mock mode. Add the remaining entities with `npm run plop -- entity`. The numbers above describe the full product this template is derived from, not the file count in this repo.
 
 > 🧪 **Standalone mock mode (no backend required).** This copy ships with
 > `NEXT_PUBLIC_USE_MOCK_API=true`, so every page — KPI cards, tables, maps,

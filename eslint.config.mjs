@@ -177,10 +177,10 @@ const eslintConfig = defineConfig([
           // Theme customizer — `/admin/theme/page.tsx` dynamic-imports the
           // entire ThemeCustomizerPage module.
           "src/ui/theme/**",
-          // Runtime-builder dashboard view — rendered only at
-          // `/runtime/dashboard/[id]` and uses `next/dynamic` internally
-          // for chart bodies. Owns its per-route budget.
-          "src/features/runtime-builder/components/DashboardView.tsx",
+          // Runtime-builder chart body — dynamic-imported (ssr:false) by
+          // DashboardView at `/runtime/dashboard/[id]`, so the recharts
+          // surface never lands in that route's first-load bundle.
+          "src/features/runtime-builder/components/DashboardChartBody.tsx",
           // Reports/fuel-balances — own route; charts gated by route nav.
           "src/app/(dashboard)/reports/fuel-balances/**",
           // Tank stock pages — own routes (`/inventory/tanks`, `/vehicles/tanks`).

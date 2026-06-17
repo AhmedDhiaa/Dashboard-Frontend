@@ -1,4 +1,17 @@
 {
     "title": "مركز تتبع الأسطول",
-    "available": "جاهز"
+    "description": "مواقع السائقين مباشرةً، تُبثّ في الوقت الفعلي.",
+    "available": "جاهز",
+    "connected": "مباشر",
+    "disconnected": "غير متصل",
+    "driversOnline": "{count, plural, =0 {لا سائقين متصلين} one {سائق واحد متصل} other {# سائقين متصلين}}",
+    "empty": "في انتظار إشارات السائقين…",
+    "speed": "{value} كم/س",
+    "mapLabel": "خريطة الأسطول المباشرة",
+    "focusDriver": "توسيط الخريطة على {name}",
+    "status": {
+        "available": "متاح",
+        "busy": "في توصيل",
+        "offline": "غير متصل"
+    }
 }

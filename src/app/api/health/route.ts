@@ -38,6 +38,13 @@ const STORAGE_DIR = path.join(process.cwd(), "messages", "_overrides")
 type CheckStatus = "ok" | "fail"
 
 async function probeBackend(): Promise<CheckStatus> {
+  // Standalone mock mode has no upstream to reach — every request is answered
+  // from seeded in-memory data. Probing `${API_URL}` (a placeholder that
+  // points back at this server) would always fail and the readiness probe
+  // would 503 forever, pulling the container out of the LB pool on boot.
+  // Report "ok" so the documented demo config is actually deployable.
+  if (process.env.NEXT_PUBLIC_USE_MOCK_API === "true") return "ok"
+
   const apiBase = (process.env.API_URL ?? "").replace(/\/+$/, "")
   if (!apiBase) return "fail"
   try {

@@ -1,4 +1,17 @@
 {
     "title": "Fleet Tracking Central",
-    "available": "Ready"
+    "description": "Live driver positions, streamed in real time.",
+    "available": "Ready",
+    "connected": "Live",
+    "disconnected": "Offline",
+    "driversOnline": "{count, plural, =0 {No drivers online} one {# driver online} other {# drivers online}}",
+    "empty": "Waiting for driver signals…",
+    "speed": "{value} km/h",
+    "mapLabel": "Live fleet map",
+    "focusDriver": "Center map on {name}",
+    "status": {
+        "available": "Available",
+        "busy": "On delivery",
+        "offline": "Offline"
+    }
 }

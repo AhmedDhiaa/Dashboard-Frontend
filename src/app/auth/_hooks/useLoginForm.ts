@@ -11,6 +11,15 @@ import { signIn } from "next-auth/react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { logger } from "@/shared/logger"
 import { getSafePath } from "@/shared/utils/url"
+import { IS_MOCK } from "@/infra/api/mock"
+
+// Standalone mock mode ships a documented `demo / demo` login. The mock accepts
+// any credentials, so we prefill them for one-click sign-in and relax the
+// client-side min-length so the 4-char demo password isn't rejected before it
+// ever reaches the (credential-agnostic) mock. A real backend keeps the 6-char
+// floor — its own password policy is the source of truth either way.
+const DEMO_CREDENTIAL = IS_MOCK ? "demo" : ""
+const MIN_PASSWORD_LENGTH = IS_MOCK ? 4 : 6
 
 interface LoginFieldErrors {
   username?: string
@@ -51,8 +60,8 @@ export function useLoginForm(t: (key: string) => string): UseLoginFormResult {
   const router = useRouter()
   const searchParams = useSearchParams()
 
-  const [username, setUsername] = useState("")
-  const [password, setPassword] = useState("")
+  const [username, setUsername] = useState(DEMO_CREDENTIAL)
+  const [password, setPassword] = useState(DEMO_CREDENTIAL)
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState("")
   const [isLoading, setIsLoading] = useState(false)
@@ -74,7 +83,7 @@ export function useLoginForm(t: (key: string) => string): UseLoginFormResult {
     const errors: LoginFieldErrors = {}
     if (!username.trim()) errors.username = t("username_required")
     if (!password) errors.password = t("password_required")
-    else if (password.length < 6) errors.password = t("password_min_length")
+    else if (password.length < MIN_PASSWORD_LENGTH) errors.password = t("password_min_length")
     setFieldErrors(errors)
     return Object.keys(errors).length === 0
   }, [username, password, t])

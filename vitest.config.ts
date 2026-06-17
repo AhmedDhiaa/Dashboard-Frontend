@@ -11,6 +11,14 @@ export default defineConfig({
     // Playwright lives under `e2e/`; vitest must not try to run those specs.
     exclude: ["**/node_modules/**", "**/.next/**", "e2e/**"],
     css: true,
+    // Vitest's 5s default is too tight for this suite's integration tests:
+    // several spawn subprocesses (`git`, `npm run init-entities` in the
+    // codegen/convert/restore paths) or drive 100-way concurrency
+    // (i18n source-write), which run 10–20s on a loaded CI runner and flake
+    // at the 5s default even though the assertions pass. A 30s ceiling keeps
+    // genuinely-hung tests bounded while removing the false failures.
+    testTimeout: 30_000,
+    hookTimeout: 30_000,
     coverage: {
       provider: "v8",
       reporter: ["text", "lcov"],

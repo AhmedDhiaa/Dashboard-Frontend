@@ -58,6 +58,24 @@ async function fetchGrantedPermissions(accessToken: string): Promise<string[]> {
   }
 }
 
+/**
+ * Authentication-only gate: passes for any signed-in user, with no permission
+ * check. Use for endpoints whose payload is needed by the whole authenticated
+ * app but must not reach anonymous callers — e.g. the runtime *schema*
+ * (entities/pages/dashboards): every user needs it to render runtime UIs, but
+ * served to the public it leaks entity structure and permission keys. (Record
+ * *data* stays permission-gated — see `requireRuntimeReader`.)
+ */
+export async function requireAuth(): Promise<PermissionOk | PermissionFail> {
+  const session = (await auth()) as ExtendedSession | null
+
+  if (!session?.user) {
+    return { ok: false, response: NextResponse.json({ error: "Unauthorized" }, { status: 401 }) }
+  }
+
+  return { ok: true, session }
+}
+
 export async function requirePermission(permission: string): Promise<PermissionOk | PermissionFail> {
   const session = (await auth()) as ExtendedSession | null
 

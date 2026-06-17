@@ -920,3 +920,21 @@
   main { margin: 0 !important; padding: 0 !important; }
   body { font-size: 11pt; color: #000; background: #fff; }
 }
+
+/* ─── Split form layout ───────────────────────────────────────────────────
+   Drives `SplitFormLayout` (core/crud). The component sets `display: grid`
+   plus the `--left-width` / `--right-width` CSS variables inline; the column
+   template lives here so the codebase stays CSS-in-JS-free (no styled-jsx).
+   Mobile: single column. ≥ md (768px): two columns. `data-no-stack` forces
+   two columns at every width. */
+.split-form-layout {
+  grid-template-columns: minmax(0, 1fr);
+}
+.split-form-layout[data-no-stack="true"] {
+  grid-template-columns: minmax(0, var(--left-width, 70%)) minmax(0, var(--right-width, 30%));
+}
+@media (min-width: 768px) {
+  .split-form-layout {
+    grid-template-columns: minmax(0, var(--left-width, 70%)) minmax(0, var(--right-width, 30%));
+  }
+}

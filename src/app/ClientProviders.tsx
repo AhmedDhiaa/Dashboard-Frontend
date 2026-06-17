@@ -26,7 +26,7 @@ import "@/shared/widgets/silence-recharts-resize-warning"
 // loaders so any page that calls `useEntityConfig(name)` finds the loader
 // without racing the route navigation.
 import { initializeEntityConfigs } from "@/core/entities/configs"
-import { setEntityOverrideMap } from "@/core/entities/registry"
+import { setEntityOverrideMap, ensureEntityConfig, getKnownEntityNames } from "@/core/entities/registry"
 import type { EntityOverrideMap } from "@/core/entities/overrides/schema"
 initializeEntityConfigs()
 
@@ -46,6 +46,18 @@ export function ClientProviders({ children, locale, messages, entityOverrides }:
 
   useEffect(() => {
     setupGlobalErrorHandlers()
+  }, [])
+
+  // Background-warm the entity-config registry shortly after first paint. Configs
+  // are lazy-imported on first visit to their page; pre-registering them off the
+  // critical path means navigating to a config-driven list/detail page renders
+  // instantly instead of flashing a skeleton while the chunk loads. Idempotent
+  // and cheap (8 small modules), and it never blocks the initial render.
+  useEffect(() => {
+    const id = setTimeout(() => {
+      for (const name of getKnownEntityNames()) void ensureEntityConfig(name)
+    }, 1200)
+    return () => clearTimeout(id)
   }, [])
 
   return (
