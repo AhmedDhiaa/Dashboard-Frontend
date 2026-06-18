@@ -159,7 +159,7 @@ function DiffFileSection({ diff }: { diff: GitDiffResponse }): React.ReactNode {
         <StatusBadge status={status} />
         {diff.truncated && (
           <span
-            className="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold bg-warning/15 text-warning-foreground border border-warning/30"
+            className="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold bg-warning/15 text-warning border border-warning/30"
             title="Server-side 200 KB cap reached"
           >
             truncated
@@ -220,12 +220,12 @@ function lineClass(line: string): string {
 function StatusBadge({ status }: { status: DiffStatus }): React.ReactNode {
   const cls =
     status === "added"
-      ? "bg-success/15 text-success-foreground border-success/30"
+      ? "bg-success/15 text-success border-success/30"
       : status === "deleted"
-        ? "bg-destructive/15 text-destructive-foreground border-destructive/30"
+        ? "bg-destructive/15 text-destructive border-destructive/30"
         : status === "unchanged"
           ? "bg-muted text-muted-foreground border-border"
-          : "bg-warning/15 text-warning-foreground border-warning/30"
+          : "bg-warning/15 text-warning border-warning/30"
   return (
     <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold border ${cls}`}>
       {status}

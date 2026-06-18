@@ -69,22 +69,22 @@
   /* Brand — single hue family at 220 (cool blue-teal). The whole brand
      palette derives from this hue: primary is the headliner, accent is
      a shifted variant for highlights, secondary is a neutral with a hint. */
-  --primary: oklch(0.52 0.14 220);
+  --primary: oklch(0.47 0.14 220);
   --primary-foreground: oklch(0.99 0.002 220);
   --secondary: oklch(0.94 0.012 220);
   --secondary-foreground: oklch(0.25 0.02 220);
-  --accent: oklch(0.65 0.15 200);
+  --accent: oklch(0.52 0.15 200);
   --accent-foreground: oklch(0.99 0.002 200);
 
   /* Semantic colours — distinct hues each, chosen for WCAG AA contrast
      against their own *-foreground at 4.5:1 minimum on small text. */
-  --success: oklch(0.58 0.16 150);
+  --success: oklch(0.48 0.16 150);
   --success-foreground: oklch(0.99 0.002 150);
   --warning: oklch(0.72 0.16 70);
   --warning-foreground: oklch(0.22 0.025 70);
-  --destructive: oklch(0.55 0.22 25);
+  --destructive: oklch(0.50 0.22 25);
   --destructive-foreground: oklch(0.99 0.002 25);
-  --info: oklch(0.58 0.14 245);
+  --info: oklch(0.48 0.14 245);
   --info-foreground: oklch(0.99 0.002 245);
 
   /* Greyscale ladder — perceptually-even steps from background to fg */
@@ -92,19 +92,19 @@
   --muted-foreground: oklch(0.50 0.018 240);
   --border: oklch(0.91 0.008 240);
   --input: oklch(0.97 0.005 240);
-  --ring: oklch(0.52 0.14 220);
+  --ring: oklch(0.47 0.14 220);
 
   /* Sidebar — anchored to the page background so it doesn't feel
      "stuck on top" of the content area. Slightly cooler tint than the
      page so the boundary remains legible without a heavy border. */
   --sidebar: oklch(0.975 0.004 240);
   --sidebar-foreground: oklch(0.28 0.018 240);
-  --sidebar-primary: oklch(0.52 0.14 220);
+  --sidebar-primary: oklch(0.47 0.14 220);
   --sidebar-primary-foreground: oklch(0.99 0.002 220);
   --sidebar-accent: oklch(0.93 0.012 220);
   --sidebar-accent-foreground: oklch(0.30 0.025 220);
   --sidebar-border: oklch(0.91 0.008 240);
-  --sidebar-ring: oklch(0.52 0.14 220);
+  --sidebar-ring: oklch(0.47 0.14 220);
 
   /* Premium accent — used for the runtime-builder generate CTA and the
      widget marketplace; a violet-shifted hue so it reads as "special"

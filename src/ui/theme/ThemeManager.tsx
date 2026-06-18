@@ -93,11 +93,11 @@ export interface ThemeContextType {
 
 const DEFAULT_SETTINGS: ThemeSettings = {
   activePreset: "modern-professional",
-  accentColor: "oklch(0.55 0.12 220)",
+  accentColor: "oklch(0.47 0.12 220)",
   secondaryColor: "oklch(0.72 0.12 80)",
-  successColor: "oklch(0.62 0.17 145)",
+  successColor: "oklch(0.48 0.17 145)",
   warningColor: "oklch(0.75 0.15 75)",
-  infoColor: "oklch(0.60 0.14 250)",
+  infoColor: "oklch(0.48 0.14 250)",
   mutedColor: "oklch(0.96 0.005 240)",
 
   // Sleek/Linear-style defaults: crisper 8px radius (was 12px), flatter

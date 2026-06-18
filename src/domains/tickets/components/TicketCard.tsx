@@ -78,13 +78,13 @@ function TicketInfoGrid({ ticket, t }: { ticket: Ticket; t: (k: string) => strin
   const dStr = (d?: string) => (d ? format(new Date(d), "MMM dd, yyyy HH:mm") : "-")
   return (
     <div className="grid grid-cols-1 gap-3">
-      <div className="flex items-center gap-3 text-sm font-semibold text-muted-foreground/80 group-hover:text-foreground transition-colors">
+      <div className="flex items-center gap-3 text-sm font-semibold text-muted-foreground group-hover:text-foreground transition-colors">
         <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-muted text-muted-foreground border border-border transition-colors">
           <User className="h-4.5 w-4.5" />
         </div>
         <span className="truncate">{ticket.userInfo?.entity?.name || t("common.placeholders.no_name")}</span>
       </div>
-      <div className="flex items-center gap-3 text-sm font-semibold text-muted-foreground/80 group-hover:text-foreground transition-colors">
+      <div className="flex items-center gap-3 text-sm font-semibold text-muted-foreground group-hover:text-foreground transition-colors">
         <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-muted text-muted-foreground border border-border transition-colors">
           <Calendar className="h-4.5 w-4.5" />
         </div>

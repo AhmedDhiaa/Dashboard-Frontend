@@ -19,7 +19,7 @@ function ShowcaseBlock({ title, description, children, className }: ShowcaseBloc
     <div className="space-y-3">
       <div className="space-y-1">
         <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">{title}</h3>
-        {description && <p className="text-xs text-muted-foreground/80">{description}</p>}
+        {description && <p className="text-xs text-muted-foreground">{description}</p>}
       </div>
       <div className={cn("rounded-lg border bg-card p-6", className)}>{children}</div>
     </div>

@@ -142,7 +142,7 @@ function StatusBadge({ shape }: { shape: RowShape }): React.ReactNode {
   // hydration per badge. A static span with token classes renders inert.
   if (shape.kind === "static-convertible") {
     return (
-      <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-semibold bg-info/15 text-info-foreground border border-info/30">
+      <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-semibold bg-info/15 text-info border border-info/30">
         Convertible from UI
       </span>
     )
@@ -158,7 +158,7 @@ function StatusBadge({ shape }: { shape: RowShape }): React.ReactNode {
     )
   }
   return (
-    <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-semibold bg-success/15 text-success-foreground border border-success/30">
+    <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-semibold bg-success/15 text-success border border-success/30">
       Editable
     </span>
   )
