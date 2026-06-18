@@ -1,7 +1,23 @@
 import type React from "react"
+import type { Metadata } from "next"
 import { headers } from "next/headers"
+import { APP_NAME } from "@/shared/config/brand"
 import { ClientProviders } from "./ClientProviders"
 import { WebVitalsReporter } from "./WebVitalsReporter"
+
+/**
+ * Brand-driven document metadata. `title.default` gives every route a non-empty
+ * `<title>` (fixes the axe `document-title` rule app-wide); `title.template`
+ * lets a page prefix its own name. White-label: reads the configured brand, so
+ * it stays generic for any deployment.
+ */
+export const metadata: Metadata = {
+  title: {
+    default: APP_NAME,
+    template: `%s · ${APP_NAME}`,
+  },
+  description: `${APP_NAME} — administration dashboard`,
+}
 import { getLocale, getMessages, getTranslations } from "next-intl/server"
 import { themeInitScript } from "@/ui/theme/init"
 import { readStore as readThemeStore } from "@/app/api/theme/_lib/storage"

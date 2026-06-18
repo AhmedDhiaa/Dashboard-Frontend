@@ -21,7 +21,7 @@ export function RuntimeSidebarSection({ collapsed = false }: { collapsed?: boole
   return (
     <div className="px-2 py-3 space-y-0.5 border-t border-border/40">
       {!collapsed && (
-        <p className="px-3 mb-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60">Builder</p>
+        <p className="px-3 mb-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Builder</p>
       )}
 
       <SidebarLink
@@ -33,9 +33,7 @@ export function RuntimeSidebarSection({ collapsed = false }: { collapsed?: boole
       />
 
       {pages.length > 0 && !collapsed && (
-        <p className="px-3 mt-3 mb-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60">
-          My Pages
-        </p>
+        <p className="px-3 mt-3 mb-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">My Pages</p>
       )}
 
       {pages.map(page => {

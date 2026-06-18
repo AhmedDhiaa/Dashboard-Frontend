@@ -112,7 +112,7 @@ export function DynamicPagesSection({ collapsed = false }: { collapsed?: boolean
   return (
     <div className="px-2 py-3 space-y-3 border-t border-border/40" data-testid="dynamic-pages-section">
       {!collapsed && (
-        <p className="px-3 text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60">Page Builder</p>
+        <p className="px-3 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Page Builder</p>
       )}
       {groups.map(([groupName, groupPages]) => (
         <div key={groupName} className="space-y-0.5">

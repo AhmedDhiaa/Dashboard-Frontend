@@ -1,23 +1,24 @@
 import { test, expect } from "@playwright/test"
+import { discoverRoutes, NOT_FOUND_TEXT } from "./_helpers"
 
 /**
- * Every core sidebar route must be reachable while authenticated: the session is
+ * Dynamic navigation gate. Discovers every internal link from the LIVE sidebar
+ * navigation and asserts each is reachable while authenticated: the session is
  * held (no login bounce), the authenticated shell renders (`#main-content` only
- * exists inside the dashboard layout, never on the login page), and it is a real
- * route — not the not-found boundary.
- *
- * This guards routing + auth + build integrity across the app's main surfaces.
- * Deep per-widget content is asserted on the dashboard in `smoke.spec.ts`.
+ * exists inside the dashboard layout), and it is a real route — not the
+ * not-found boundary. Add a nav item and it's covered with no test edit.
  */
-const ROUTES = ["/", "/users", "/roles", "/tickets", "/notifications", "/example"] as const
-const NOT_FOUND_TEXT = "الصفحة غير موجودة"
+test("every sidebar route is reachable, authenticated, and not a 404", async ({ page }) => {
+  await page.goto("/", { waitUntil: "domcontentloaded" })
+  await page.locator("#main-content").first().waitFor({ state: "visible", timeout: 45_000 })
 
-test.describe("navigation (authenticated)", () => {
-  for (const route of ROUTES) {
-    test(`renders ${route}`, async ({ page }) => {
+  const routes = await discoverRoutes(page)
+  expect(routes.length, "expected the sidebar nav to expose several routes").toBeGreaterThan(3)
+
+  for (const route of routes) {
+    await test.step(`renders ${route}`, async () => {
       await page.goto(route, { waitUntil: "domcontentloaded" })
       await expect(page, `${route} should not bounce to login`).not.toHaveURL(/\/auth\/login/)
-
       const main = page.locator("#main-content")
       await expect(main, `${route} authenticated shell should render`).toBeVisible({ timeout: 45_000 })
       await expect(main, `${route} should not be the not-found page`).not.toContainText(NOT_FOUND_TEXT)
