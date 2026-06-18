@@ -6,7 +6,8 @@
  */
 
 import { apiClient } from "./client"
-import type { Page, CRUDListParams } from "@/shared/ports/backend"
+import type { Page, CRUDListParams, EntityService } from "@/shared/ports/backend"
+import { resolveAbpEndpoint, toAbpListParams, abpParamsSerializer } from "./adapters/abp/crud-params"
 import { logger } from "@/shared/logger"
 
 // The canonical definition now lives in the port; re-exported so existing
@@ -31,15 +32,14 @@ export class BaseCRUDService<
   TEntity extends { id: string | number },
   TCreate = Partial<Omit<TEntity, "id">>,
   TUpdate = Partial<Omit<TEntity, "id">>,
-> {
+> implements EntityService<TEntity, TCreate, TUpdate> {
   protected endpoint: string
   protected resourceName: string
   protected client = apiClient
 
   constructor(config: CRUDServiceConfig | string) {
     const rawEndpoint = typeof config === "string" ? config : config.endpoint
-    const normalized = rawEndpoint.startsWith("/") ? rawEndpoint : `/${rawEndpoint}`
-    this.endpoint = normalized.startsWith("/api") ? normalized : `/api/app${normalized}`
+    this.endpoint = resolveAbpEndpoint(rawEndpoint)
     if (typeof config === "string") {
       this.resourceName = rawEndpoint.split("/").filter(Boolean).pop() || rawEndpoint
     } else {
@@ -53,73 +53,12 @@ export class BaseCRUDService<
   async getList(params?: CRUDListParams): Promise<Page<TEntity>> {
     logger.debug(`[${this.resourceName}] getList`, { params })
 
-    // Normalize parameters to ABP format
-    // Support both scalar values and arrays (for multi-select filters)
-    const normalizedParams: Record<string, string | number | boolean | (string | number)[] | undefined> = {}
-
-    if (params) {
-      const {
-        pageNumber,
-        pageSize,
-        skipCount,
-        maxResultCount,
-        searchKey,
-        term,
-        sortBy,
-        sortDirection,
-        sorting,
-        searchParam,
-        ...rest
-      } = params
-
-      // ABP Pagination: skipCount and maxResultCount are the standard
-      if (skipCount !== undefined) {
-        normalizedParams.skipCount = skipCount
-      } else if (pageNumber !== undefined) {
-        normalizedParams.skipCount = pageNumber * (pageSize || 10)
-      }
-
-      if (maxResultCount !== undefined) {
-        normalizedParams.maxResultCount = maxResultCount
-      } else if (pageSize !== undefined) {
-        normalizedParams.maxResultCount = pageSize
-      }
-
-      // Map search to ABP. Entity endpoints accept `Term`; the Role endpoint
-      // accepts `Filter`. Callers pass `searchParam` to override (default "Term").
-      const searchValue = searchKey ?? term
-      if (searchValue) {
-        const key = searchParam || "Term"
-        normalizedParams[key] = searchValue
-      }
-
-      // Map sort to ABP `Sorting`: "<field> <asc|desc>". Prefer an explicit
-      // `sorting` string if a caller already built one.
-      if (sorting) {
-        normalizedParams.Sorting = sorting
-      } else if (sortBy) {
-        normalizedParams.Sorting = `${sortBy} ${sortDirection ?? "asc"}`
-      }
-
-      // Merge all other custom filters (supports arrays for multi-select)
-      Object.assign(normalizedParams, rest)
-    }
-
+    // Translate neutral list params into ABP's query shape (skipCount/Sorting/
+    // Term|Filter), serialized with repeated keys for array filters. The ABP
+    // wire format lives in the adapter so a different backend encodes its own way.
     const response = await this.client.get<Page<TEntity>>(this.endpoint, {
-      params: normalizedParams,
-      // Serialize arrays as repeated params: documentStatus=1&documentStatus=2
-      paramsSerializer: p => {
-        const qs = new URLSearchParams()
-        for (const [key, val] of Object.entries(p)) {
-          if (val === undefined || val === null) continue
-          if (Array.isArray(val)) {
-            val.forEach(v => qs.append(key, String(v)))
-          } else {
-            qs.append(key, String(val))
-          }
-        }
-        return qs.toString()
-      },
+      params: toAbpListParams(params),
+      paramsSerializer: abpParamsSerializer,
     })
 
     logger.info(`[${this.resourceName}] getList completed`, {

@@ -4,14 +4,14 @@
 
 import { Link } from "lucide-react"
 import type { EntityConfig } from "@/core/entities/config-types"
-import { BaseCRUDService } from "@/infra/api"
+import { entity } from "@/infra/api/backend"
 import { getConnectionSchema, type ConnectionFormValues } from "@/domains/system/connection/connection.schema"
 
 interface Connection {
   id: number
   [key: string]: unknown
 }
-const connectionService = new BaseCRUDService<Connection>("/connection")
+const connectionService = entity<Connection>("/connection")
 
 export const connectionConfig: EntityConfig<Connection, ConnectionFormValues> = {
   entityName: "connection",

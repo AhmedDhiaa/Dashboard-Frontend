@@ -17,12 +17,26 @@
  * `docs/BACKEND-ADAPTER-PLAN.md` (phase 6) and `docs/BACKEND-ADAPTER.md`.
  */
 
-import type { AuthPort, EnumPort, BackendKind } from "@/shared/ports/backend"
+import type { AuthPort, EnumPort, EntityService, BackendKind } from "@/shared/ports/backend"
 import { abpAuthPort } from "./adapters/abp/auth.adapter"
 import { abpEnumPort } from "./adapters/abp/enum.adapter"
+import { createCRUDService } from "./crud-service"
 
 /** Active backend. Static for now (only ABP exists); env-switch this when a second adapter lands. */
 export const activeBackend: BackendKind = "abp"
 
 export const authPort: AuthPort = abpAuthPort
 export const enumPort: EnumPort = abpEnumPort
+
+/**
+ * Create a port-typed CRUD service for a logical resource. New code should use
+ * this instead of `BaseCRUDService`/`createCRUDService` directly, so the backend
+ * stays swappable. The ABP adapter resolves the resource to an `/api/app/*` (or
+ * framework) URL and maps the envelope; a different backend implements
+ * `EntityService<T>` its own way.
+ */
+export function entity<TEntity extends { id: string | number }, TCreate = Partial<TEntity>, TUpdate = Partial<TEntity>>(
+  resource: string,
+): EntityService<TEntity, TCreate, TUpdate> {
+  return createCRUDService<TEntity, TCreate, TUpdate>(resource)
+}

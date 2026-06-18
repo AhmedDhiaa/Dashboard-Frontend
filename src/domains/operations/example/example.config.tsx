@@ -5,7 +5,7 @@
 
 import { ParkingCircle } from "lucide-react"
 import type { EntityConfig } from "@/core/entities/config-types"
-import { BaseCRUDService } from "@/infra/api"
+import { entity } from "@/infra/api/backend"
 import {
   getExampleCreateSchema,
   getExampleUpdateSchema,
@@ -14,7 +14,7 @@ import {
 import type { Example } from "./example.types"
 import { ExampleLocationField, ExampleBoundariesField } from "./example-renderers"
 
-const exampleService = new BaseCRUDService<Example>("/example")
+const exampleService = entity<Example>("/example")
 
 export const exampleConfig: EntityConfig<Example, ExampleFormValues> = {
   entityName: "example",

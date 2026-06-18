@@ -61,13 +61,17 @@ export interface Page<T> {
  * (`/api/app/<resource>` or a framework path) and maps the envelope; a different
  * backend resolves it however it likes.
  */
-export interface EntityService<TEntity, TCreate = Partial<TEntity>, TUpdate = Partial<TEntity>> {
-  list(params?: CRUDListParams): Promise<Page<TEntity>>
+export interface EntityService<
+  TEntity extends { id: string | number },
+  TCreate = Partial<TEntity>,
+  TUpdate = Partial<TEntity>,
+> {
+  getList(params?: CRUDListParams): Promise<Page<TEntity>>
   getById(id: string | number): Promise<TEntity>
   create(data: TCreate): Promise<TEntity>
   update(id: string | number, data: TUpdate): Promise<TEntity>
   delete(id: string | number): Promise<void>
-  autocomplete(params: { term?: string; id?: string | number; maxResultCount?: number }): Promise<TEntity[]>
+  autocomplete(params?: { term?: string; id?: number; maxResultCount?: number }): Promise<TEntity[]>
 }
 
 // ─── Auth ───────────────────────────────────────────────────────────────────
@@ -150,7 +154,7 @@ export interface BackendPort {
   config: ConfigPort
   enums: EnumPort
   /** Factory for per-resource CRUD services. */
-  entity<TEntity, TCreate = Partial<TEntity>, TUpdate = Partial<TEntity>>(
+  entity<TEntity extends { id: string | number }, TCreate = Partial<TEntity>, TUpdate = Partial<TEntity>>(
     resource: string,
   ): EntityService<TEntity, TCreate, TUpdate>
 }

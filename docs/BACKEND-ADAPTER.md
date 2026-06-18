@@ -52,8 +52,13 @@ adapter selected in the composition root alongside the others.
 ## What's still ABP-coupled (migration status)
 
 Done: list result + params contracts, enums, app-config fetch, OAuth2 token
-grants. Not yet behind the port: the generic CRUD service paths/encoding
-(`crud-service.ts` + the `/api/app` convention), profile/permission
-normalization (`grantedPolicies`), and account recovery. Until those move, the
-`check-swagger-drift` gate stays scoped to `src/domains/**`, not the adapter
-folder. See `BACKEND-ADAPTER-PLAN.md` phases 2, 4, 6.
+grants, the `EntityService<T>` CRUD port (`BaseCRUDService` implements it; create
+services via the composition root's `entity()` factory), and the ABP list-param
+encoding (`adapters/abp/crud-params.ts` — `skipCount`/`Sorting`/`Term`|`Filter`).
+
+Not yet behind the port: the `/api/app/{name}` resolution still lives in
+`crud-service.ts` (move it into `adapters/abp/` alongside the param encoding to
+finish the CRUD adapter), profile/permission normalization (`grantedPolicies`),
+and account recovery. Until the remaining ABP URLs move, the `check-swagger-drift`
+gate stays scoped to `src/domains/**`, not the adapter folder. See
+`BACKEND-ADAPTER-PLAN.md` phases 2, 4, 6.

@@ -4,14 +4,14 @@
 
 import { List } from "lucide-react"
 import type { EntityConfig } from "@/core/entities/config-types"
-import { BaseCRUDService } from "@/infra/api"
+import { entity } from "@/infra/api/backend"
 import { getEnumSchema, type EnumFormValues } from "@/domains/system/enum/enum.schema"
 
 interface Enum {
   id: number
   [key: string]: unknown
 }
-const enumService = new BaseCRUDService<Enum>("/enum")
+const enumService = entity<Enum>("/enum")
 
 export const enumConfig: EntityConfig<Enum, EnumFormValues> = {
   entityName: "enum",

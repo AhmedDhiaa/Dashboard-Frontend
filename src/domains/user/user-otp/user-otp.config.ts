@@ -4,14 +4,14 @@
 
 import { Key } from "lucide-react"
 import type { EntityConfig } from "@/core/entities/config-types"
-import { BaseCRUDService } from "@/infra/api"
+import { entity } from "@/infra/api/backend"
 import { getUserOtpSchema, type UserOtpFormValues } from "@/domains/user/user-otp/user-otp.schema"
 
 interface UserOTP {
   id: number
   [key: string]: unknown
 }
-const userOTPService = new BaseCRUDService<UserOTP>("/user-otp")
+const userOTPService = entity<UserOTP>("/user-otp")
 
 export const userOTPConfig: EntityConfig<UserOTP, UserOtpFormValues> = {
   entityName: "user-otp",
