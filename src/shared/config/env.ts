@@ -13,6 +13,10 @@ const DEV_API_FALLBACK = process.env.NODE_ENV !== "production" ? "http://localho
 
 const envSchema = z.object({
   NEXT_PUBLIC_API_URL: z.string().url("NEXT_PUBLIC_API_URL must be a valid URL").optional().default(DEV_API_FALLBACK),
+  // Backend selector for the composition root: "abp" (default) or the reference
+  // "rest" adapter. Mock mode (NEXT_PUBLIC_USE_MOCK_API) overrides this.
+  NEXT_PUBLIC_BACKEND: z.enum(["abp", "rest"]).optional(),
+  NEXT_PUBLIC_REST_API_URL: z.string().optional(),
   NEXTAUTH_URL: z.string().optional(),
   NEXTAUTH_SECRET: z.string().optional(),
   AUTH_SECRET: z.string().optional(),

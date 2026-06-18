@@ -179,4 +179,4 @@ export interface BackendPort {
 }
 
 /** Selector value for the composition root. */
-export type BackendKind = "abp" | "mock"
+export type BackendKind = "abp" | "mock" | "rest"

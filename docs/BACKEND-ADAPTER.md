@@ -13,33 +13,41 @@ See [`BACKEND-ADAPTER-PLAN.md`](BACKEND-ADAPTER-PLAN.md) for the full migration 
 | Layer | Where | Role |
 | --- | --- | --- |
 | **Ports** | `src/shared/ports/backend.ts` | Neutral interfaces + DTOs (`Page<T>`, `CRUDListParams`, `AuthPort`, `EnumPort`, `ConfigPort`, …). No transport. |
-| **Adapters** | `src/infra/api/adapters/<backend>/` | Concrete implementations. ABP lives in `adapters/abp/` (`auth.adapter.ts`, `enum.adapter.ts`, `config.adapter.ts`). |
-| **Composition root** | `src/infra/api/backend.ts` | Selects the active adapter and exports the ports (`authPort`, `enumPort`, …). The only place a backend is named. |
+| **Adapters** | `src/infra/api/adapters/<backend>/` | Concrete implementations. ABP lives in `adapters/abp/`; a **reference REST adapter** lives in `adapters/rest/`; mock in `adapters/mock/`. |
+| **Composition root** | `src/infra/api/backend.ts` | Selects the active adapter and exports the ports (`authPort`, `enumPort`, `configPort`, `entity`). The only place a backend is named. |
 
-## How to add one (e.g. "acme")
+## Reference adapter: REST (`adapters/rest/`)
 
-1. **Implement the ports** in `src/infra/api/adapters/acme/`:
+A complete, contract-tested second backend ships as proof the seam is truly
+backend-agnostic. It targets a conventional JSON REST API whose conventions are
+nothing like ABP's, yet plugs into the **same ports**:
+
+| Concern | ABP | REST reference |
+| --- | --- | --- |
+| Auth | OAuth2 `POST /connect/token` (grant) | `POST /auth/login` → `{ token, refreshToken }` |
+| List | `?skipCount&maxResultCount&Sorting&Term` → `{ items, totalCount }` | `?_page&_limit&_sort&q` → `{ data, total }` |
+| Resource URL | `/api/app/{name}` | `/{resource}` |
+| Config | `/api/abp/application-configuration` (flatten `grantedPolicies`) | `/me` (already-flat `permissions`) |
+
+App code (`features/`, `domains/`, `ui/`, hooks, NextAuth) sees none of this. The
+REST adapter passes the **same** `runAuthPortContract` / `runEnumPortContract`
+suites as ABP and mock (`adapters/rest/__tests__/`).
+
+## How to add your own
+
+1. **Implement the ports** in `src/infra/api/adapters/<backend>/` — copy
+   `adapters/rest/` as the template. Map your backend's shapes to the neutral
+   DTOs here; this is the *only* place that knows your URLs and payloads.
+2. **Select it** in `src/infra/api/backend.ts` (already wired for `rest`):
    ```ts
-   // adapters/acme/auth.adapter.ts
-   import type { AuthPort } from "@/shared/ports/backend"
-   export const acmeAuthPort: AuthPort = {
-     async login(creds) {/* call your backend, return { accessToken, refreshToken?, expiresIn? } */},
-     async refresh(token) {/* … */},
-   }
+   export const activeBackend = IS_MOCK ? "mock"
+     : process.env.NEXT_PUBLIC_BACKEND === "rest" ? "rest" : "abp"
    ```
-   Do the same for `EnumPort`, `ConfigPort`, etc. as you need them. Map your
-   backend's shapes to the neutral DTOs here — this is the *only* place that
-   knows your backend's URLs and payloads.
-
-2. **Select it** in `src/infra/api/backend.ts`:
-   ```ts
-   import { acmeAuthPort } from "./adapters/acme/auth.adapter"
-   const backend = (process.env.NEXT_PUBLIC_BACKEND ?? "abp") as BackendKind
-   export const authPort: AuthPort = backend === "acme" ? acmeAuthPort : abpAuthPort
-   ```
-
-3. **Nothing else changes.** `features/`, `domains/`, `ui/`, `core/`, NextAuth,
-   and the hooks already depend on the ports via the composition root.
+   Set `NEXT_PUBLIC_BACKEND=rest` (+ `NEXT_PUBLIC_REST_API_URL`) to run on it.
+3. **Conformance-test it** by calling the shared contract suites from
+   `@/shared/test-utils/port-contracts` against your adapter.
+4. **Nothing else changes.** App code already depends on the ports via the
+   composition root.
 
 ## Mock mode
 

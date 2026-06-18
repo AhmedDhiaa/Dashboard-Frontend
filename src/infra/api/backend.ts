@@ -24,25 +24,39 @@ import { abpEnumPort } from "./adapters/abp/enum.adapter"
 import { abpConfigPort } from "./adapters/abp/config.adapter"
 import { mockAuthPort } from "./adapters/mock/auth.adapter"
 import { mockEnumPort } from "./adapters/mock/enum.adapter"
+import { restAuthPort } from "./adapters/rest/auth.adapter"
+import { restEnumPort } from "./adapters/rest/enum.adapter"
+import { restConfigPort } from "./adapters/rest/config.adapter"
+import { restEntity } from "./adapters/rest/crud.adapter"
 import { createCRUDService } from "./crud-service"
 import { IS_MOCK } from "./mock"
 
-/** Active backend — `mock` when standalone mode is on, otherwise the real ABP backend. */
-export const activeBackend: BackendKind = IS_MOCK ? "mock" : "abp"
+/**
+ * Active backend. `mock` (standalone demo) wins when on; otherwise `NEXT_PUBLIC_BACKEND`
+ * selects the real backend — `abp` (default) or the reference `rest` adapter. This
+ * env flag is read HERE and nowhere else.
+ */
+export const activeBackend: BackendKind = IS_MOCK ? "mock" : process.env.NEXT_PUBLIC_BACKEND === "rest" ? "rest" : "abp"
 
-export const authPort: AuthPort = IS_MOCK ? mockAuthPort : abpAuthPort
-export const enumPort: EnumPort = IS_MOCK ? mockEnumPort : abpEnumPort
-export const configPort: ConfigPort = abpConfigPort
+export const authPort: AuthPort =
+  activeBackend === "mock" ? mockAuthPort : activeBackend === "rest" ? restAuthPort : abpAuthPort
+
+export const enumPort: EnumPort =
+  activeBackend === "mock" ? mockEnumPort : activeBackend === "rest" ? restEnumPort : abpEnumPort
+
+export const configPort: ConfigPort = activeBackend === "rest" ? restConfigPort : abpConfigPort
 
 /**
  * Create a port-typed CRUD service for a logical resource. New code should use
  * this instead of `BaseCRUDService`/`createCRUDService` directly, so the backend
- * stays swappable. The ABP adapter resolves the resource to an `/api/app/*` (or
- * framework) URL and maps the envelope; a different backend implements
- * `EntityService<T>` its own way.
+ * stays swappable. ABP resolves the resource to an `/api/app/*` URL with
+ * `skipCount`/`Sorting`/`Term` encoding; the reference REST adapter uses
+ * `/{resource}` with `_page`/`_limit`/`q` — and consumers see neither.
  */
 export function entity<TEntity extends { id: string | number }, TCreate = Partial<TEntity>, TUpdate = Partial<TEntity>>(
   resource: string,
 ): EntityService<TEntity, TCreate, TUpdate> {
-  return createCRUDService<TEntity, TCreate, TUpdate>(resource)
+  return activeBackend === "rest"
+    ? restEntity<TEntity, TCreate, TUpdate>(resource)
+    : createCRUDService<TEntity, TCreate, TUpdate>(resource)
 }
