@@ -35,6 +35,8 @@
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage",
+    "check:coverage": "vitest run --coverage",
+    "test:e2e": "playwright test --config playwright.functional.config.ts",
     "test:e2e:rtl": "playwright test --project=chromium-rtl",
     "test:e2e:rtl:update": "playwright test --project=chromium-rtl --update-snapshots",
     "docs:build": "echo 'Documentation is in README.md, ARCHITECTURE.md, and CONTRIBUTING.md'",

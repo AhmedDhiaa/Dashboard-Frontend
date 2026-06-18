@@ -19,41 +19,32 @@ import { useEffect, useState, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import { useSession, signOut } from "next-auth/react"
 import { fetchApplicationConfiguration, invalidateAppConfigCache } from "@/infra/auth/application-config.service"
-import type { CurrentUser, ExtendedSession } from "@/shared/types"
+import type { ExtendedSession } from "@/shared/types"
+import type { BackendUser } from "@/shared/ports/backend"
+import { toApplicationConfig } from "@/infra/api/adapters/abp/config-normalize"
 import { logger } from "@/shared/logger"
 import { useNotification } from "@/ui/application"
 
 interface UseAuthReturn {
-  user: CurrentUser | null
+  user: BackendUser | null
   isAuthenticated: boolean
   isLoading: boolean
   error: string | null
   logout: () => Promise<void>
 }
 
-/** Minimal fallback user when the /application-configuration endpoint is unavailable (404). */
-const FALLBACK_USER: CurrentUser = {
+/** Minimal fallback user when the application-configuration endpoint is unavailable (404). */
+const FALLBACK_USER: BackendUser = {
   id: "unknown",
-  userName: "User",
-  isAuthenticated: true,
+  name: "User",
   roles: [],
   tenantId: null,
-  impersonatorUserId: null,
-  impersonatorTenantId: null,
-  impersonatorUserName: null,
-  impersonatorTenantName: null,
-  name: "User",
-  surName: null,
-  email: null,
-  emailVerified: false,
-  phoneNumber: null,
-  phoneNumberVerified: false,
-  sessionId: null,
+  permissions: [],
 }
 
 export function useAuth(): UseAuthReturn {
   const { data: session, status } = useSession()
-  const [user, setUser] = useState<CurrentUser | null>(null)
+  const [user, setUser] = useState<BackendUser | null>(null)
   const [isLoadingUser, setIsLoadingUser] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
@@ -68,8 +59,10 @@ export function useAuth(): UseAuthReturn {
   const loadUser = useCallback(async () => {
     try {
       setIsLoadingUser(true)
+      // Map the raw ABP config to the neutral profile so this hook (and any
+      // consumer) stays backend-agnostic — the ABP shape never leaks out.
       const config = await fetchApplicationConfiguration()
-      setUser(config.currentUser)
+      setUser(toApplicationConfig(config).user)
       setError(null)
     } catch (err: unknown) {
       const axiosError = err as { response?: { status?: number } }

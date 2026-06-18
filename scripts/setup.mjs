@@ -10,27 +10,34 @@
  *   3. Applies any branding / backend overrides passed as flags.
  *   4. Picks mock-mode automatically: ON if you gave no API URL (standalone
  *      demo), OFF the moment you point it at a real backend.
+ *   5. (optional) Regenerates the swagger-drift snapshot from the new backend's
+ *      spec, so the API guardrail matches the backend you're wiring up.
  *
  * Zero dependencies — Node built-ins only. Cross-platform.
  *
  * Usage:
  *   npm run setup
  *   npm run setup -- --name "Peace Bird" --domain peacebird.iq \
- *                    --api-url https://api.peacebird.iq --client-id Api_App
+ *                    --api-url https://api.peacebird.iq --client-id Api_App \
+ *                    --swagger-url https://api.peacebird.iq/swagger/v1/swagger.json
  *   npm run setup -- --force        # overwrite an existing .env
  *
  * Flags (all optional):
- *   --name <str>        NEXT_PUBLIC_APP_NAME       (UI/title/email display name)
- *   --domain <str>      NEXT_PUBLIC_BRAND_DOMAIN   (emails, image allow-list)
- *   --api-url <url>     NEXT_PUBLIC_API_URL + API_URL (real backend → mock off)
- *   --socket-url <url>  NEXT_PUBLIC_SOCKET_URL
- *   --client-id <str>   NEXT_PUBLIC_CLIENT_ID      (ABP OAuth2 public client)
- *   --mock <true|false> force standalone mock mode on/off
- *   --force             overwrite an existing .env
+ *   --name <str>         NEXT_PUBLIC_APP_NAME       (UI/title/email display name)
+ *   --domain <str>       NEXT_PUBLIC_BRAND_DOMAIN   (emails, image allow-list)
+ *   --api-url <url>      NEXT_PUBLIC_API_URL + API_URL (real backend → mock off)
+ *   --socket-url <url>   NEXT_PUBLIC_SOCKET_URL
+ *   --client-id <str>    NEXT_PUBLIC_CLIENT_ID      (ABP OAuth2 public client)
+ *   --swagger-url <url>  Fetch the backend's OpenAPI/Swagger and rewrite the
+ *                        drift snapshot (scripts/swagger-paths.json).
+ *   --swagger-json <path> Same, from a local swagger JSON file.
+ *   --mock <true|false>  force standalone mock mode on/off
+ *   --force              overwrite an existing .env
  */
 
 import { readFileSync, writeFileSync, existsSync, copyFileSync } from "node:fs"
 import { randomBytes } from "node:crypto"
+import { execFileSync } from "node:child_process"
 import { fileURLToPath } from "node:url"
 import { dirname, join } from "node:path"
 
@@ -113,6 +120,28 @@ if (args.name) console.log(`  • NEXT_PUBLIC_APP_NAME           ${args.name}`)
 if (args.domain) console.log(`  • NEXT_PUBLIC_BRAND_DOMAIN       ${args.domain}`)
 if (args["api-url"]) console.log(`  • NEXT_PUBLIC_API_URL / API_URL  ${args["api-url"]}`)
 if (args["client-id"]) console.log(`  • NEXT_PUBLIC_CLIENT_ID          ${args["client-id"]}`)
+
+// ─── optionally refresh the swagger snapshot for the new backend ───────────────
+const swaggerUrl = args["swagger-url"]
+const swaggerJson = args["swagger-json"]
+if (swaggerUrl || swaggerJson) {
+  try {
+    const childEnv = { ...process.env }
+    if (swaggerJson) childEnv.APP_SWAGGER_JSON = swaggerJson
+    else childEnv.APP_SWAGGER_URL = swaggerUrl
+    execFileSync(process.execPath, [join(ROOT, "scripts", "check-swagger-drift.mjs"), "--update"], {
+      cwd: ROOT,
+      env: childEnv,
+      stdio: "inherit",
+    })
+    console.log(`  • swagger snapshot               refreshed from ${swaggerJson || swaggerUrl}`)
+  } catch {
+    const src = swaggerJson ? `APP_SWAGGER_JSON=${swaggerJson}` : `APP_SWAGGER_URL=${swaggerUrl}`
+    console.warn(`  ⚠ swagger snapshot refresh failed — run it manually:`)
+    console.warn(`    ${src} node scripts/check-swagger-drift.mjs --update`)
+  }
+}
+
 console.log("")
 if (mock === "true") {
   console.log("Next:  npm install && npm run dev   →  sign in with  demo / demo123")

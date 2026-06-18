@@ -17,10 +17,15 @@ import { asBlockNode, type BlockNode } from "./types"
 /**
  * Random kebab-safe suffix. `crypto.randomUUID()` is required by Node 18+
  * and every modern browser; the slice keeps ids short while still giving
- * us 6 hex chars (~16M values) which is more than enough collision
- * headroom inside a single page schema.
+ * us 12 hex chars (~2.8e14 values).
+ *
+ * 12 (not 6) so bulk regeneration stays collision-free: a 6-char suffix has
+ * ~16M values, where the birthday bound puts a 1000-id batch (e.g. duplicating
+ * a large subtree, or the stress test) at a few-percent collision chance. 12
+ * chars drops that to ~1-in-5e8 while keeping ids well inside kebabIdSchema's
+ * 40-char limit.
  */
-function randomSuffix(length = 6): string {
+function randomSuffix(length = 12): string {
   return crypto.randomUUID().replace(/-/g, "").slice(0, length)
 }
 

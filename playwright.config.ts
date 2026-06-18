@@ -25,6 +25,8 @@ const BASE_URL = process.env.APP_E2E_BASE_URL ?? "http://localhost:3000"
 
 export default defineConfig({
   testDir: "./e2e",
+  // The functional mock-server suite has its own config (playwright.functional.config.ts).
+  testIgnore: ["functional/**"],
   // RTL screenshot diffs are deterministic; one retry covers transient
   // layout-shift / animation timing.
   retries: process.env.CI ? 1 : 0,

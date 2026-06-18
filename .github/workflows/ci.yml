@@ -65,7 +65,41 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
       - run: npm ci
-      - run: npx vitest run
+      # Linux leg also enforces the coverage gate (thresholds in vitest.config.ts);
+      # Windows runs plain so the OS-parity signal stays fast.
+      - name: Unit tests + coverage gate
+        if: matrix.os == 'ubuntu-latest'
+        run: npm run check:coverage
+      - name: Unit tests
+        if: matrix.os == 'windows-latest'
+        run: npx vitest run
+
+  e2e:
+    name: E2E (mock)
+    # Drives the real app (login → navigate → list) end-to-end against a
+    # spawned standalone MOCK server (no backend). Playwright manages the dev
+    # server lifecycle via playwright.functional.config.ts.
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+      - name: Functional E2E (standalone mock server)
+        run: npm run test:e2e
+      - name: Upload traces on failure
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-traces
+          path: test-results/
+          retention-days: 14
+          if-no-files-found: ignore
 
   build:
     name: Production build
