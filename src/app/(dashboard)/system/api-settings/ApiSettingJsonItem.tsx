@@ -67,7 +67,7 @@ export const ApiSettingJsonField = memo(function ApiSettingJsonField({
           </div>
           <div className="flex flex-col min-w-0">
             <Label className="text-sm font-medium truncate">{displayName}</Label>
-            <span className="text-[9px] font-mono text-muted-foreground/60 truncate">{name}</span>
+            <span className="text-[9px] font-mono text-muted-foreground truncate">{name}</span>
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
@@ -101,9 +101,7 @@ export const ApiSettingJsonField = memo(function ApiSettingJsonField({
         onChange={handleChange}
         className={cn(
           "w-full min-h-25 p-3 text-xs font-mono rounded-lg border bg-background outline-none transition-colors resize-y focus:ring-2 focus:ring-offset-0",
-          !isValid
-            ? "border-destructive focus:ring-destructive/40"
-            : "border-border focus:ring-ring/40",
+          !isValid ? "border-destructive focus:ring-destructive/40" : "border-border focus:ring-ring/40",
         )}
         placeholder='{ "key": "value" }'
       />

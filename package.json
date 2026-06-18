@@ -37,6 +37,8 @@
     "test:coverage": "vitest --coverage",
     "check:coverage": "vitest run --coverage",
     "test:e2e": "playwright test --config playwright.functional.config.ts",
+    "e2e:prod:build": "npm run init-entities && cross-env NEXT_PUBLIC_USE_MOCK_API=true NEXT_PUBLIC_API_URL=http://localhost:3100 NEXT_PUBLIC_APP_NAME=Acme NEXT_PUBLIC_BRAND_DOMAIN=example.com next build --webpack",
+    "e2e:prod": "cross-env APP_E2E_PROD=1 playwright test --config playwright.functional.config.ts",
     "test:e2e:rtl": "playwright test --project=chromium-rtl",
     "test:e2e:rtl:update": "playwright test --project=chromium-rtl --update-snapshots",
     "docs:build": "echo 'Documentation is in README.md, ARCHITECTURE.md, and CONTRIBUTING.md'",

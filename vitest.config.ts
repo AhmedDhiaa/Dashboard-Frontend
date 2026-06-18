@@ -63,6 +63,11 @@ export default defineConfig({
         "src/infra/api/crud-service.ts",
         "src/infra/api/errors.ts",
         "src/infra/api/error-handling.ts",
+        // infra/api/adapters — the backend seam (ABP wire conventions + the
+        // reference REST adapter), contract- and unit-tested.
+        "src/infra/api/adapters/abp/crud-params.ts",
+        "src/infra/api/adapters/abp/config-normalize.ts",
+        "src/infra/api/adapters/rest/**",
         // infra/ratelimit — config, types, Redis adapter
         "src/infra/ratelimit/config.ts",
         "src/infra/ratelimit/redis-limiter.ts",

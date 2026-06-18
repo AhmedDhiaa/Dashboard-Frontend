@@ -48,7 +48,10 @@ export default defineConfig({
   ],
 
   webServer: {
-    command: "npm run dev",
+    // APP_E2E_PROD=1 serves the production STANDALONE build (pre-built chunks,
+    // the artifact that ships) via `e2e:prod:build` + the serve script; otherwise
+    // the dev server. Prod mode is deterministic — no on-demand compile.
+    command: process.env.APP_E2E_PROD ? "node scripts/e2e-prod-serve.mjs" : "npm run dev",
     // Wait for the LOGIN route itself to compile + respond, so the dev server's
     // cold first-compile happens during startup (240s budget) rather than inside
     // the auth.setup test — that was the source of flakiness.

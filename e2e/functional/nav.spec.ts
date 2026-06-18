@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test"
-import { discoverRoutes, NOT_FOUND_TEXT } from "./_helpers"
+import { discoverProductRoutes, NOT_FOUND_TEXT } from "./_helpers"
 
 /**
  * Dynamic navigation gate. Discovers every internal link from the LIVE sidebar
@@ -12,7 +12,7 @@ test("every sidebar route is reachable, authenticated, and not a 404", async ({ 
   await page.goto("/", { waitUntil: "domcontentloaded" })
   await page.locator("#main-content").first().waitFor({ state: "visible", timeout: 45_000 })
 
-  const routes = await discoverRoutes(page)
+  const routes = await discoverProductRoutes(page)
   expect(routes.length, "expected the sidebar nav to expose several routes").toBeGreaterThan(3)
 
   for (const route of routes) {

@@ -55,7 +55,7 @@ const BooleanSettingField = memo(function BooleanSettingField({
         </div>
         <div className="flex flex-col min-w-0">
           <span className="text-sm font-medium truncate">{displayName}</span>
-          <span className="text-[9px] font-mono text-muted-foreground/60 truncate">{name}</span>
+          <span className="text-[9px] font-mono text-muted-foreground truncate">{name}</span>
         </div>
       </div>
       <div className="flex items-center gap-2 shrink-0">
@@ -119,7 +119,7 @@ const TextSettingField = memo(function TextSettingField({
             <Label htmlFor={name} className="text-sm font-medium truncate cursor-pointer">
               {displayName}
             </Label>
-            <span className="text-[9px] font-mono text-muted-foreground/60 truncate">{name}</span>
+            <span className="text-[9px] font-mono text-muted-foreground truncate">{name}</span>
           </div>
         </div>
         <div className="flex items-center gap-1.5 shrink-0">

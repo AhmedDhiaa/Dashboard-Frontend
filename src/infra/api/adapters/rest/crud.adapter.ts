@@ -74,8 +74,8 @@ export function restEntity<
       if (params?.term) q.set("q", params.term)
       if (params?.maxResultCount) q.set("_limit", String(params.maxResultCount))
       const s = q.toString()
-      const { data } = await restFetch<TEntity[]>(`${base}${s ? `?${s}` : ""}`)
-      return data ?? []
+      const { data } = await restFetch<RestList<TEntity>>(`${base}${s ? `?${s}` : ""}`)
+      return data?.data ?? []
     },
   }
 }

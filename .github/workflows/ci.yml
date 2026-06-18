@@ -75,12 +75,14 @@ jobs:
         run: npx vitest run
 
   e2e:
-    name: E2E (mock)
-    # Drives the real app (login → navigate → list) end-to-end against a
-    # spawned standalone MOCK server (no backend). Playwright manages the dev
-    # server lifecycle via playwright.functional.config.ts.
+    name: E2E (mock, prod build)
+    # Drives the real app (login → navigate → list → a11y) against the PRODUCTION
+    # standalone build in mock mode — the artifact that ships, with pre-built
+    # chunks (deterministic, no dev on-demand compile). `npm run e2e:prod` serves
+    # it via scripts/e2e-prod-serve.mjs. (`npm run test:e2e` runs the same suite
+    # against the dev server for fast local iteration.)
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -90,8 +92,10 @@ jobs:
       - run: npm ci
       - name: Install Playwright browser
         run: npx playwright install --with-deps chromium
-      - name: Functional E2E (standalone mock server)
-        run: npm run test:e2e
+      - name: Build standalone (mock)
+        run: npm run e2e:prod:build
+      - name: Functional E2E (production standalone)
+        run: npm run e2e:prod
       - name: Upload traces on failure
         if: ${{ failure() }}
         uses: actions/upload-artifact@v4

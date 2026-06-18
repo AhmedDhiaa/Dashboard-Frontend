@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test"
-import { discoverRoutes, axeViolations } from "./_helpers"
+import { discoverProductRoutes, axeViolations } from "./_helpers"
 
 /**
  * Dynamic accessibility gate. Scans EVERY live sidebar route (discovered at
@@ -14,12 +14,7 @@ test("no critical/serious axe violations on any sidebar route", async ({ page })
   await page.goto("/", { waitUntil: "domcontentloaded" })
   await page.locator("#main-content").first().waitFor({ state: "visible", timeout: 45_000 })
 
-  // `/showcase/*` is the component GALLERY — it renders every primitive in
-  // isolation (incl. deliberately-bare demo buttons/inputs) and non-
-  // deterministically, so it isn't a representative product-a11y context. It
-  // stays in the nav-reachability gate, just not the strict axe gate.
-  const A11Y_SKIP = /^\/showcase(\/|$)/
-  const routes = (await discoverRoutes(page)).filter(route => !A11Y_SKIP.test(route))
+  const routes = await discoverProductRoutes(page)
   expect(routes.length, "expected the sidebar nav to expose several routes").toBeGreaterThan(3)
 
   for (const route of routes) {

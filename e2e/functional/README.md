@@ -11,12 +11,20 @@ layout snapshots.
 ## Run
 
 ```bash
-npm run test:e2e          # spawns the mock dev server + runs the suite
+npm run test:e2e          # dev server — fast local iteration
+npm run e2e:prod          # PRODUCTION standalone build (mock) — what CI runs
 ```
 
 Config: [`playwright.functional.config.ts`](../../playwright.functional.config.ts).
 Playwright owns the server lifecycle (`webServer`) on port 3100 with a throwaway
 `AUTH_SECRET`, so no manual setup is needed.
+
+- **`test:e2e`** spawns `npm run dev` and compiles routes on demand (one-time
+  cold-start cost; flaky table bodies — see limits below).
+- **`e2e:prod`** (the CI gate) runs `e2e:prod:build` then serves the Next.js
+  **standalone** output via [`scripts/e2e-prod-serve.mjs`](../../scripts/e2e-prod-serve.mjs)
+  — the artifact that ships, with pre-built chunks (deterministic). `APP_E2E_PROD=1`
+  flips the `webServer` command.
 
 ## How auth works
 

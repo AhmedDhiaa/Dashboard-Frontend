@@ -28,6 +28,15 @@ export async function discoverRoutes(page: Page): Promise<string[]> {
   return [...seen]
 }
 
+/** `/showcase/*` is the component GALLERY — every primitive in isolation, not a
+ * product surface — so the routing + a11y gates skip it. */
+const NON_PRODUCT = /^\/showcase(\/|$)/
+
+/** Discovered routes minus non-product surfaces (the component gallery). */
+export async function discoverProductRoutes(page: Page): Promise<string[]> {
+  return (await discoverRoutes(page)).filter(route => !NON_PRODUCT.test(route))
+}
+
 export type AxeFinding = { id: string; impact: string | null; nodes: number }
 
 /** Run axe (WCAG 2 A/AA) against the current page and return the violations. */
