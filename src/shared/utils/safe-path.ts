@@ -111,6 +111,14 @@ export function assertSafePath(p: string): string {
 export async function assertSafePathResolved(p: string): Promise<string> {
   const abs = assertSafePath(p)
 
+  // Canonicalise the project root the SAME way `fs.realpath` canonicalises the
+  // target below. Without this, a `process.cwd()` that is an 8.3 short name
+  // (e.g. Windows CI temp dirs: `C:\Users\RUNNER~1\…` → `…\runneradmin\…`) makes
+  // every resolved path look like it escapes — a false positive. Comparing
+  // realpath-to-realpath keeps the symlink-escape defence while tolerating
+  // short-name / case aliases of the root itself.
+  const realRoot = await realpathOrSelf(ROOT)
+
   // Find the deepest existing ancestor. The whole chain may not exist
   // (typical for fs.mkdir { recursive: true } with new dirs), so walk up.
   let probe = abs
@@ -118,10 +126,9 @@ export async function assertSafePathResolved(p: string): Promise<string> {
     try {
       const real = await fs.realpath(probe)
       if (real !== probe) {
-        // Symlink encountered. Re-validate the resolved path against
-        // ALLOWED_ROOTS. We re-use the sync helper so the check stays
-        // lexical AND the regex set stays in one place.
-        const realRel = path.relative(ROOT, real)
+        // Symlink (or short-name alias) encountered. Re-validate the resolved
+        // path against ALLOWED_ROOTS relative to the canonicalised root.
+        const realRel = path.relative(realRoot, real)
         if (realRel.startsWith("..") || path.isAbsolute(realRel) || !isInsideAllowedRoot(realRel)) {
           throw new PathTraversalError(
             `Path "${p}" resolves through a symlink to "${real}" which is outside the allowed roots`,
@@ -138,6 +145,15 @@ export async function assertSafePathResolved(p: string): Promise<string> {
   }
 
   return abs
+}
+
+/** `fs.realpath`, falling back to the input if the path doesn't exist. */
+async function realpathOrSelf(target: string): Promise<string> {
+  try {
+    return await fs.realpath(target)
+  } catch {
+    return target
+  }
 }
 
 function isInsideAllowedRoot(rel: string): boolean {
