@@ -82,6 +82,12 @@ jobs:
     # it via scripts/e2e-prod-serve.mjs. (`npm run test:e2e` runs the same suite
     # against the dev server for fast local iteration.)
     runs-on: ubuntu-latest
+    # Run inside Playwright's official image: Chromium + every system library it
+    # needs are baked in, so we skip `playwright install --with-deps` and the
+    # root `apt-get` step it runs. That step had been hanging to the job timeout
+    # when the runner's Ubuntu mirror was unreachable. The image tag MUST match
+    # the @playwright/test version in package-lock.json — bump both together.
+    container: mcr.microsoft.com/playwright:v1.61.0-noble
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
@@ -90,8 +96,11 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
       - run: npm ci
-      - name: Install Playwright browser
-        run: npx playwright install --with-deps chromium
+      # Browsers ship inside the image at $PLAYWRIGHT_BROWSERS_PATH; this is a
+      # no-op verify that the Chromium build matches the pinned Playwright
+      # version (no apt, no --with-deps). It downloads only on version drift.
+      - name: Verify Playwright browser
+        run: npx playwright install chromium
       - name: Build standalone (mock)
         run: npm run e2e:prod:build
       - name: Functional E2E (production standalone)
