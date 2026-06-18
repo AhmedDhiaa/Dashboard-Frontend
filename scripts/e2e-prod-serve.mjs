@@ -30,5 +30,17 @@ if (existsSync(path.join(ROOT, "public"))) {
   cpSync(path.join(ROOT, "public"), path.join(STANDALONE, "public"), { recursive: true })
 }
 
-const child = spawn(process.execPath, [SERVER], { cwd: STANDALONE, env: { ...process.env }, stdio: "inherit" })
+// Next's standalone server binds to `process.env.HOSTNAME || "0.0.0.0"`. Inside
+// a container Docker sets HOSTNAME to the container id, so the server would bind
+// to that interface alone and Playwright's `http://localhost:PORT` readiness
+// poll (playwright.functional.config.ts) could never connect — the webServer
+// wait times out. Force HOSTNAME back to an all-interfaces bind (Next's own
+// default), which keeps localhost reachable on the host and in CI containers.
+// Override with APP_E2E_HOST if a specific bind address is ever needed.
+const host = process.env.APP_E2E_HOST ?? "0.0.0.0"
+const child = spawn(process.execPath, [SERVER], {
+  cwd: STANDALONE,
+  env: { ...process.env, HOSTNAME: host },
+  stdio: "inherit",
+})
 child.on("exit", code => process.exit(code ?? 0))
