@@ -1,10 +1,18 @@
 /**
  * User API Service
- * Handles identity user management according to ABP standards
+ * Handles identity user management according to ABP standards.
+ *
+ * ABP identity endpoints live in `adapters/abp/identity.adapter`; this service
+ * is the domain-facing façade over the CRUD port + those operations.
  */
 
-import { BaseCRUDService, apiClient } from "@/infra/api"
-import type { IdentityUserRole } from "@/shared/types/security.types"
+import { BaseCRUDService } from "@/infra/api"
+import {
+  ABP_IDENTITY_USERS_ENDPOINT,
+  fetchUserRoleAssignments,
+  updateUserRoleAssignments,
+  fetchAssignableUserRoles,
+} from "@/infra/api/adapters/abp/identity.adapter"
 
 export interface IdentityUser {
   id: string
@@ -41,24 +49,22 @@ export interface UpdateUserDto {
 
 class IdentityUserService extends BaseCRUDService<IdentityUser, CreateUserDto, UpdateUserDto> {
   constructor() {
-    super("/api/identity/users")
+    super(ABP_IDENTITY_USERS_ENDPOINT)
   }
 
-  // Get roles for a specific user
-  async getUserRoles(userId: string) {
-    const response = await apiClient.get<{ items: IdentityUserRole[] }>(`${this.endpoint}/${userId}/roles`)
-    return response.data
+  /** Role assignments for a specific user. */
+  getUserRoles(userId: string) {
+    return fetchUserRoleAssignments(userId)
   }
 
-  // Update roles for a user
-  async updateUserRoles(userId: string, roleNames: string[]) {
-    await apiClient.put(`${this.endpoint}/${userId}/roles`, { roleNames })
+  /** Replace a user's role assignments. */
+  updateUserRoles(userId: string, roleNames: string[]) {
+    return updateUserRoleAssignments(userId, roleNames)
   }
 
-  // Get roles that can be assigned to a user
-  async getAssignableRoles() {
-    const response = await apiClient.get<{ items: IdentityUserRole[] }>(`${this.endpoint}/assignable-roles`)
-    return response.data
+  /** Roles that can be assigned to a user. */
+  getAssignableRoles() {
+    return fetchAssignableUserRoles()
   }
 }
 

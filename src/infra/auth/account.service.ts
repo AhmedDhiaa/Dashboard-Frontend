@@ -9,7 +9,7 @@
  * real ABP account module.
  */
 
-import { apiClient } from "@/infra/api"
+import { authPort } from "@/infra/api/backend"
 import { IS_MOCK } from "@/infra/api/mock"
 import { APP_NAME } from "@/shared/config/brand"
 
@@ -21,27 +21,24 @@ export interface ResetPasswordInput {
 
 class AccountService {
   /**
-   * Trigger ABP's password-reset email. ABP mails a link to
+   * Trigger the backend's password-reset email. The reset link points back to
    * `${returnUrl}?userId=…&resetToken=…` — i.e. our /auth/reset-password page.
-   * Always resolves on the client even for an unknown email (ABP does not
-   * disclose whether an account exists — neither do we).
+   * Always resolves on the client even for an unknown email (the backend does
+   * not disclose whether an account exists — neither do we). The ABP
+   * `/api/account/*` transport lives behind `AuthPort`.
    */
   async sendPasswordResetCode(email: string): Promise<void> {
     if (IS_MOCK) return
     const returnUrl = typeof window !== "undefined" ? `${window.location.origin}/auth/reset-password` : undefined
-    await apiClient.post("/api/account/send-password-reset-code", {
-      email,
-      // ABP routes the email template + return URL by app name. If your ABP
-      // OpenIddict application is registered under a different name, set it here.
-      appName: APP_NAME,
-      returnUrl,
-    })
+    // appName routes the email template + return URL. If your backend registers
+    // the OpenIddict/OAuth application under a different name, set it here.
+    await authPort.sendPasswordResetCode({ email, appName: APP_NAME, returnUrl })
   }
 
   /** Complete the reset using the `userId` + `resetToken` from the email link. */
   async resetPassword(input: ResetPasswordInput): Promise<void> {
     if (IS_MOCK) return
-    await apiClient.post("/api/account/reset-password", input)
+    await authPort.resetPassword(input)
   }
 }
 

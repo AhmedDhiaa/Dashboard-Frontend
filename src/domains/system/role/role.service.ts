@@ -1,41 +1,39 @@
 /**
  * Role API Service
- * Handles identity role management according to ABP standards
+ * Handles identity role management according to ABP standards.
+ *
+ * ABP identity endpoints live in `adapters/abp/identity.adapter`; this service
+ * is the domain-facing façade over the CRUD port + those operations.
  */
 
-import { BaseCRUDService, apiClient } from "@/infra/api"
-import type { IdentityRole, CreateRoleDto, UpdateRoleDto, GetUserRolesResponse } from "@/shared/types/security.types"
+import { BaseCRUDService } from "@/infra/api"
+import {
+  ABP_IDENTITY_ROLES_ENDPOINT,
+  fetchUserRoles,
+  fetchAssignableRoles,
+  fetchAllRoles,
+} from "@/infra/api/adapters/abp/identity.adapter"
+import type { IdentityRole, CreateRoleDto, UpdateRoleDto } from "@/shared/types/security.types"
 
 class IdentityRoleService extends BaseCRUDService<IdentityRole, CreateRoleDto, UpdateRoleDto> {
   constructor() {
-    super("/api/identity/roles")
+    super(ABP_IDENTITY_ROLES_ENDPOINT)
   }
 
-  // Override getList to match ABP paging/response format if needed
-  // BaseCRUDService already handles { items, totalCount } if adapted in the client
-
-  // Get roles for a specific user
-  async getUserRoles(userId: string) {
-    const response = await apiClient.get<GetUserRolesResponse>(`/api/identity/users/${userId}/roles`)
-    return response.data
+  /** Roles assigned to a specific user. */
+  getUserRoles(userId: string) {
+    return fetchUserRoles(userId)
   }
 
-  // Get roles that can be assigned to a user
-  async getAssignableRoles() {
-    const response = await apiClient.get<{ items: IdentityRole[] }>("/api/identity/users/assignable-roles")
-    return response.data
+  /** Roles that can be assigned to a user. */
+  getAssignableRoles() {
+    return fetchAssignableRoles()
   }
 
-  /**
-   * Get all roles for autocomplete
-   * ABP endpoint: /api/identity/roles/all
-   */
-  override async autocomplete(): Promise<IdentityRole[]> {
-    const response = await apiClient.get<{ items: IdentityRole[] }>("/api/identity/roles/all")
-    return response.data.items || []
+  /** All roles, for autocomplete. */
+  override autocomplete(): Promise<IdentityRole[]> {
+    return fetchAllRoles()
   }
-
-  // Permission management is handled by SecurityService
 }
 
 export const roleService = new IdentityRoleService()

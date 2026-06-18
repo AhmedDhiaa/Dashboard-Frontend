@@ -1,10 +1,12 @@
 {
   "source": "https://api.example.com/swagger/v1/swagger.json",
   "generatedFrom": "D:/tmp/acme-swagger.json snapshot",
-  "count": 279,
+  "count": 281,
   "paths": [
     "/api/Connection/ping",
     "/api/abp/application-configuration",
+    "/api/account/reset-password",
+    "/api/account/send-password-reset-code",
     "/api/app/api-setting",
     "/api/app/area",
     "/api/app/area/autocomplete",

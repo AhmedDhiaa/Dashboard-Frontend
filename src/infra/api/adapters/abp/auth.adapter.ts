@@ -11,6 +11,7 @@
 
 import { login as oauth2Login, refreshToken as oauth2Refresh } from "@/infra/auth/oauth2.service"
 import type { AuthPort, Credentials, TokenSet } from "@/shared/ports/backend"
+import { sendPasswordResetCodeAbp, resetPasswordAbp } from "./account.adapter"
 
 export const abpAuthPort: AuthPort = {
   async login(credentials: Credentials): Promise<TokenSet> {
@@ -22,4 +23,7 @@ export const abpAuthPort: AuthPort = {
     const t = await oauth2Refresh({ refresh_token: refreshToken })
     return { accessToken: t.access_token, refreshToken: t.refresh_token, expiresIn: t.expires_in }
   },
+
+  sendPasswordResetCode: sendPasswordResetCodeAbp,
+  resetPassword: resetPasswordAbp,
 }

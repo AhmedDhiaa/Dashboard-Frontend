@@ -20,6 +20,12 @@ import { useSession } from "next-auth/react"
 import { fetchApplicationConfiguration, invalidateAppConfigCache } from "@/infra/auth/application-config.service"
 import { APP_CONFIG_CACHE_TTL_MS } from "@/infra/auth/auth-constants"
 import type { ApplicationConfiguration } from "@/shared/types/application-config.types"
+import {
+  flattenAbpPermissions,
+  isAbpPermissionGranted,
+  abpSettingValues,
+  abpFeatureValues,
+} from "@/infra/api/adapters/abp/config-normalize"
 import { logger } from "@/shared/logger"
 
 // ─── Shared state across all hook consumers ──────────────────────────────────
@@ -39,15 +45,12 @@ export function getAppConfig(): ApplicationConfiguration | null {
 
 /** Get cached grantedPolicies keys as string array */
 export function getCachedPermissions(): string[] {
-  if (!_sharedConfig) return []
-  const policies = _sharedConfig.auth?.grantedPolicies ?? {}
-  return Object.keys(policies).filter(k => policies[k])
+  return flattenAbpPermissions(_sharedConfig)
 }
 
 /** Check a single permission against cached config (non-React) */
 export function isPermissionGrantedCached(permission: string): boolean {
-  if (!_sharedConfig) return false
-  return _sharedConfig.auth?.grantedPolicies?.[permission] === true
+  return isAbpPermissionGranted(_sharedConfig, permission)
 }
 
 // ─── Hook ────────────────────────────────────────────────────────────────────
@@ -158,15 +161,11 @@ export function useAppConfig(): AppConfigState {
   // the memo with the new reference. So the memo IS correct — the rule just
   // doesn't model module-level state.
   /* eslint-disable react-hooks/exhaustive-deps */
-  const permissions = useMemo<string[]>(() => {
-    if (!_sharedConfig) return []
-    const policies = _sharedConfig.auth?.grantedPolicies ?? {}
-    return Object.keys(policies).filter(k => policies[k])
-  }, [_sharedConfig])
+  const permissions = useMemo<string[]>(() => flattenAbpPermissions(_sharedConfig), [_sharedConfig])
 
-  const settings = useMemo<Record<string, string>>(() => _sharedConfig?.setting?.values ?? {}, [_sharedConfig])
+  const settings = useMemo<Record<string, string>>(() => abpSettingValues(_sharedConfig), [_sharedConfig])
 
-  const features = useMemo<Record<string, string>>(() => _sharedConfig?.features?.values ?? {}, [_sharedConfig])
+  const features = useMemo<Record<string, string>>(() => abpFeatureValues(_sharedConfig), [_sharedConfig])
   /* eslint-enable react-hooks/exhaustive-deps */
 
   const refreshConfig = useCallback(async () => {

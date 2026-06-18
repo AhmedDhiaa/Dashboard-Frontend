@@ -10,23 +10,29 @@
  * backend is added, switch on an env flag (e.g. `NEXT_PUBLIC_BACKEND`) here and
  * nowhere else.
  *
- * NOTE: mock mode is currently served one layer lower — the axios adapter swap
- * in `client.ts` (`IS_MOCK`) answers every `apiClient` call from seeded data, so
- * each ABP adapter transparently works in mock mode too. A future step can move
- * mock up to a port-level adapter selected right here. See
- * `docs/BACKEND-ADAPTER-PLAN.md` (phase 6) and `docs/BACKEND-ADAPTER.md`.
+ * Mock mode (`NEXT_PUBLIC_USE_MOCK_API`) is selected RIGHT HERE for the auth and
+ * enum ports — `mockAuthPort`/`mockEnumPort` serve seeded data with no network.
+ * The CRUD `entity()` factory and the cached raw application-config fetch stay on
+ * the lower axios-adapter mock (`client.ts` `IS_MOCK`): the entity store is heavy
+ * and must not enter this composition root's server graph, and the config cache
+ * needs the raw ABP envelope. See `docs/BACKEND-ADAPTER.md`.
  */
 
-import type { AuthPort, EnumPort, EntityService, BackendKind } from "@/shared/ports/backend"
+import type { AuthPort, ConfigPort, EnumPort, EntityService, BackendKind } from "@/shared/ports/backend"
 import { abpAuthPort } from "./adapters/abp/auth.adapter"
 import { abpEnumPort } from "./adapters/abp/enum.adapter"
+import { abpConfigPort } from "./adapters/abp/config.adapter"
+import { mockAuthPort } from "./adapters/mock/auth.adapter"
+import { mockEnumPort } from "./adapters/mock/enum.adapter"
 import { createCRUDService } from "./crud-service"
+import { IS_MOCK } from "./mock"
 
-/** Active backend. Static for now (only ABP exists); env-switch this when a second adapter lands. */
-export const activeBackend: BackendKind = "abp"
+/** Active backend — `mock` when standalone mode is on, otherwise the real ABP backend. */
+export const activeBackend: BackendKind = IS_MOCK ? "mock" : "abp"
 
-export const authPort: AuthPort = abpAuthPort
-export const enumPort: EnumPort = abpEnumPort
+export const authPort: AuthPort = IS_MOCK ? mockAuthPort : abpAuthPort
+export const enumPort: EnumPort = IS_MOCK ? mockEnumPort : abpEnumPort
+export const configPort: ConfigPort = abpConfigPort
 
 /**
  * Create a port-typed CRUD service for a logical resource. New code should use

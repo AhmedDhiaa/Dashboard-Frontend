@@ -13,6 +13,8 @@
 
 import { apiClient } from "@/infra/api"
 import type { ApplicationConfiguration } from "@/shared/types/application-config.types"
+import type { ApplicationConfig, ConfigPort } from "@/shared/ports/backend"
+import { toApplicationConfig } from "./config-normalize"
 
 export async function fetchApplicationConfigurationFromAbp(
   includeLocalizationResources: boolean,
@@ -21,4 +23,17 @@ export async function fetchApplicationConfigurationFromAbp(
     params: { IncludeLocalizationResources: includeLocalizationResources },
   })
   return response.data
+}
+
+/**
+ * ABP implementation of the neutral `ConfigPort`. Fetches the raw ABP config and
+ * normalizes it (permissions/settings/features/roles/user) via `config-normalize`.
+ * The cached/de-duped fetch path stays in `application-config.service`; this is
+ * the port surface a different backend implements its own way.
+ */
+export const abpConfigPort: ConfigPort = {
+  async getApplicationConfig(): Promise<ApplicationConfig> {
+    const raw = await fetchApplicationConfigurationFromAbp(false)
+    return toApplicationConfig(raw)
+  },
 }

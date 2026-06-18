@@ -100,15 +100,34 @@ export interface BackendUser {
   permissions: string[]
 }
 
+/** Trigger a self-service password-reset email. */
+export interface PasswordResetRequest {
+  email: string
+  /** App name the backend uses to pick the email template + return URL. */
+  appName?: string
+  /** Where the backend's reset link should point (the app's reset page). */
+  returnUrl?: string
+}
+
+/** Complete a password reset with the token from the reset email. */
+export interface PasswordReset {
+  userId: string
+  resetToken: string
+  password: string
+}
+
 /**
- * Authentication token grants. Profile/permission loading and account recovery
- * stay separate for now (they're entangled with the NextAuth session + the
- * permission model) — a later sub-phase folds them in via ConfigPort + a
- * `getProfile` method.
+ * Authentication: token grants + self-service account recovery. Profile/
+ * permission loading lives in `ConfigPort` (see `getApplicationConfig`); the
+ * adapter hides each backend's grant + account-endpoint shapes.
  */
 export interface AuthPort {
   login(credentials: Credentials): Promise<TokenSet>
   refresh(refreshToken: string): Promise<TokenSet>
+  /** Self-service recovery: trigger a password-reset email. */
+  sendPasswordResetCode(request: PasswordResetRequest): Promise<void>
+  /** Self-service recovery: complete the reset with the emailed token. */
+  resetPassword(reset: PasswordReset): Promise<void>
 }
 
 // ─── Application config (permissions / settings / features) ──────────────────

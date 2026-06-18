@@ -5,7 +5,9 @@
  * The systemic fix for the Phase-0 drift bugs (a service pointed at a path the
  * ABP backend doesn't expose — e.g. `/report/stock-quantity`, which 404s on
  * every load). This check extracts every hand-written resource path from the
- * `*.service.ts` files under src/domains and fails if it is absent from the spec.
+ * `*.service.ts` files under src/domains AND the ABP adapter files under
+ * src/infra/api/adapters/abp (where the framework `/api/identity`, `/api/abp`,
+ * `/api/account` paths now live), and fails if it is absent from the spec.
  *
  * Spec source (in priority order):
  *   1. `--update` flag → fetch live (APP_SWAGGER_URL, default
@@ -28,6 +30,7 @@ import { fileURLToPath } from "node:url"
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const ROOT = resolve(__dirname, "..")
 const DOMAINS_DIR = join(ROOT, "src", "domains")
+const ABP_ADAPTERS_DIR = join(ROOT, "src", "infra", "api", "adapters", "abp")
 const SNAPSHOT_PATH = join(ROOT, "scripts", "swagger-paths.json")
 const DEFAULT_SWAGGER_URL = "https://api.example.com/swagger/v1/swagger.json"
 
@@ -79,12 +82,13 @@ async function updateSnapshot() {
 
 // ─── Extract service paths ──────────────────────────────────────────────────
 
-function* walkServiceFiles(dir) {
+function* walkFiles(dir, fileRe) {
   if (!existsSync(dir)) return
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    if (entry.name === "__tests__") continue
     const full = join(dir, entry.name)
-    if (entry.isDirectory()) yield* walkServiceFiles(full)
-    else if (/\.service\.(ts|tsx)$/.test(entry.name)) yield full
+    if (entry.isDirectory()) yield* walkFiles(full, fileRe)
+    else if (fileRe.test(entry.name) && !/\.test\.(ts|tsx)$/.test(entry.name)) yield full
   }
 }
 
@@ -104,7 +108,8 @@ const CLIENT_CALL_RE = /(?:apiClient|this\.client)\s*\.\s*(?:get|post|put|patch|
 
 function extractEndpoints() {
   const found = [] // { raw, normalized, file }
-  for (const file of walkServiceFiles(DOMAINS_DIR)) {
+  const files = [...walkFiles(DOMAINS_DIR, /\.service\.(ts|tsx)$/), ...walkFiles(ABP_ADAPTERS_DIR, /\.ts$/)]
+  for (const file of files) {
     const content = readFileSync(file, "utf8")
     const isCrud = content.includes("BaseCRUDService")
     const rel = relative(ROOT, file).replace(/\\/g, "/")

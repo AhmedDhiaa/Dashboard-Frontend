@@ -1,4 +1,5 @@
 import { BaseCRUDService } from "@/infra/api/crud-service"
+import { abpGetSub } from "@/infra/api/adapters/abp/crud-extras"
 import type { Page } from "@/shared/ports/backend"
 import type { NotificationFormValues, NotificationUpdateFormValues } from "./notification.schema"
 
@@ -37,10 +38,9 @@ class NotificationService extends BaseCRUDService<Notification, NotificationForm
     super("/notification")
   }
 
-  // Add custom methods if needed
-  async getCurrentList() {
-    const response = await this.client.get<Page<Notification>>(`${this.endpoint}/current-list`)
-    return response.data
+  /** Notifications for the current user. */
+  getCurrentList(): Promise<Page<Notification>> {
+    return abpGetSub<Page<Notification>>(this.endpoint, "current-list")
   }
 }
 

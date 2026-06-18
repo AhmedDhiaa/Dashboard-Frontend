@@ -12,6 +12,7 @@ import {
 } from "@/infra/auth/auth-constants"
 import { IS_MOCK } from "@/infra/api/mock"
 import { mockUserProfile } from "@/infra/api/mock/handlers/auth"
+import { flattenAbpPermissions } from "@/infra/api/adapters/abp/config-normalize"
 
 // ─── In-flight refresh deduplication ─────────────────────────────────────────
 // Prevents thundering-herd: if multiple tabs trigger a refresh simultaneously,
@@ -29,8 +30,7 @@ function normalizeUserProfile(data: unknown): ExtendedUser | null {
   if (!currentUser) return null
 
   // Extract grantedPolicies from ABP auth section → user.grantedPermissions
-  const grantedPolicies: Record<string, boolean> = typedData.auth?.grantedPolicies ?? typedData.auth?.policies ?? {}
-  currentUser.grantedPermissions = Object.keys(grantedPolicies).filter(key => grantedPolicies[key])
+  currentUser.grantedPermissions = flattenAbpPermissions(typedData)
 
   // Normalize roles to lowercase for consistent admin checks
   currentUser.roles = currentUser.roles?.map((r: string) => r.toLowerCase()) ?? []

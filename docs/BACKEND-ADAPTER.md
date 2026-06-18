@@ -51,14 +51,30 @@ adapter selected in the composition root alongside the others.
 
 ## What's still ABP-coupled (migration status)
 
-Done: list result + params contracts, enums, app-config fetch, OAuth2 token
-grants, the `EntityService<T>` CRUD port (`BaseCRUDService` implements it; create
-services via the composition root's `entity()` factory), and the ABP list-param
-encoding (`adapters/abp/crud-params.ts` — `skipCount`/`Sorting`/`Term`|`Filter`).
+Behind the ports now:
 
-Not yet behind the port: the `/api/app/{name}` resolution still lives in
-`crud-service.ts` (move it into `adapters/abp/` alongside the param encoding to
-finish the CRUD adapter), profile/permission normalization (`grantedPolicies`),
-and account recovery. Until the remaining ABP URLs move, the `check-swagger-drift`
-gate stays scoped to `src/domains/**`, not the adapter folder. See
-`BACKEND-ADAPTER-PLAN.md` phases 2, 4, 6.
+- **CRUD** — `EntityService<T>` (`BaseCRUDService` implements it; create services
+  via the composition root's `entity()` factory). All ABP wire conventions live
+  in `adapters/abp/`: `/api/app/{name}` resolution + `skipCount`/`Sorting`/
+  `Term`|`Filter` encoding (`crud-params.ts`) and sub-resource/upload helpers
+  (`crud-extras.ts`).
+- **Identity** — role/user framework endpoints (`/api/identity/*`) in
+  `adapters/abp/identity.adapter.ts`; the domain services are thin façades.
+- **Config / permissions** — `ConfigPort.getApplicationConfig()` returns the
+  neutral `ApplicationConfig`; the `grantedPolicies`→permissions + settings/
+  features/roles/user normalization lives in `adapters/abp/config-normalize.ts`
+  and is shared by `useAppConfig` and the NextAuth server callback.
+- **Auth** — OAuth2 token grants **and** self-service account recovery
+  (`/api/account/*`) behind `AuthPort` (`auth.adapter.ts` + `account.adapter.ts`).
+- **Enums** — `EnumPort` (`enum.adapter.ts`).
+- **Mock** — `mockAuthPort`/`mockEnumPort` are selected at the composition root
+  when `NEXT_PUBLIC_USE_MOCK_API` is on. CRUD + the cached raw app-config fetch
+  intentionally stay on the lower axios-adapter mock (heavy entity store + raw
+  envelope — see the composition-root note).
+
+Guardrails: `check-swagger-drift` now validates the ABP paths in both
+`src/domains/**/*.service.ts` and `src/infra/api/adapters/abp/**`. The
+`validate-architecture` rule still confines `apiClient` to `infra/` + service
+files; the remaining non-adapter `apiClient` users are generic infrastructure
+(entity-autocomplete, the page-builder data services) plus `security.service`
+(permission-management), which a later pass can fold into adapters.
