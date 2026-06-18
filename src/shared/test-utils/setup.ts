@@ -42,6 +42,14 @@ if (typeof window !== "undefined" && typeof window.matchMedia !== "function") {
   })
 }
 
+// jsdom doesn't implement HTMLCanvasElement.getContext — recharts and other
+// chart primitives probe it, which prints a noisy "Not implemented" line to the
+// virtual console. A null-returning stub matches jsdom's actual (null) return
+// while silencing the warning; chart tests assert on the DOM, not the canvas.
+if (typeof HTMLCanvasElement !== "undefined") {
+  HTMLCanvasElement.prototype.getContext = vi.fn(() => null) as unknown as HTMLCanvasElement["getContext"]
+}
+
 // MSW lifecycle: start once, reset handlers + fixtures per test, close after.
 beforeAll(() => mswServer.listen({ onUnhandledRequest: "bypass" }))
 afterEach(() => {

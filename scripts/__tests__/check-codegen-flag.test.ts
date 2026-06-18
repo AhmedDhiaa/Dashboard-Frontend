@@ -42,6 +42,10 @@ beforeEach(() => {
   execSync("git init --quiet -b main", { cwd: sandbox })
   execSync('git config user.email "test@example.com"', { cwd: sandbox })
   execSync('git config user.name "test"', { cwd: sandbox })
+  // Windows hosts default to core.autocrlf=true, which makes `git add` print
+  // "LF will be replaced by CRLF" warnings for the LF-normalised script/env
+  // fixtures. Pin it off so the test output stays clean.
+  execSync("git config core.autocrlf false", { cwd: sandbox })
   // Mirror the script under scripts/ — same relative path the real
   // package.json refers to.
   mkdirSync(join(sandbox, "scripts"), { recursive: true })

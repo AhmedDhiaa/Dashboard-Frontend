@@ -8,6 +8,10 @@ export default defineConfig({
     globals: true,
     environment: "jsdom",
     setupFiles: ["./src/shared/test-utils/setup.ts"],
+    // Silence the application logger so a passing suite doesn't print app
+    // debug/info/warn/error lines (error-path tests log intentionally). The
+    // logger fns still run, so spies/`toHaveBeenCalled` assertions are unaffected.
+    env: { NEXT_PUBLIC_LOG_LEVEL: "silent" },
     // Playwright lives under `e2e/`; vitest must not try to run those specs.
     exclude: ["**/node_modules/**", "**/.next/**", "e2e/**"],
     css: true,

@@ -126,12 +126,19 @@ export async function assertSafePathResolved(p: string): Promise<string> {
     try {
       const real = await fs.realpath(probe)
       if (real !== probe) {
-        // Symlink (or short-name alias) encountered. Re-validate the resolved
-        // path against ALLOWED_ROOTS relative to the canonicalised root.
-        const realRel = path.relative(realRoot, real)
-        if (realRel.startsWith("..") || path.isAbsolute(realRel) || !isInsideAllowedRoot(realRel)) {
+        // Symlink (or short-name alias) encountered on an ancestor. Reconstruct
+        // the FULL resolved target — the realpath'd ancestor PLUS the not-yet-
+        // existing suffix below it — and re-validate THAT against ALLOWED_ROOTS.
+        // Checking the ancestor alone is wrong: when the deepest existing
+        // ancestor is the project root itself (the suffix is entirely new dirs),
+        // its relative path is "" and would spuriously fail the allowed-root
+        // check even though the full target is legitimately inside a root.
+        const suffix = path.relative(probe, abs)
+        const resolvedFull = path.resolve(real, suffix)
+        const resolvedRel = path.relative(realRoot, resolvedFull)
+        if (resolvedRel.startsWith("..") || path.isAbsolute(resolvedRel) || !isInsideAllowedRoot(resolvedRel)) {
           throw new PathTraversalError(
-            `Path "${p}" resolves through a symlink to "${real}" which is outside the allowed roots`,
+            `Path "${p}" resolves through a symlink to "${resolvedFull}" which is outside the allowed roots`,
             p,
           )
         }

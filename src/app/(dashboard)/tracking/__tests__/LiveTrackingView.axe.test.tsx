@@ -5,11 +5,11 @@
  * runs in jsdom without a socket or a real map.
  */
 
-import { render } from "@testing-library/react"
 import { describe, it, expect, vi } from "vitest"
 import { axe } from "vitest-axe"
 
 import { ThemeProvider } from "@/ui/theme/ThemeManager"
+import { renderAndSettle } from "@/shared/test-utils/axe-render"
 
 vi.mock("@/infra/socket", () => ({
   useDriverTracking: () => ({
@@ -67,7 +67,7 @@ const AXE_OPTIONS = {
 
 describe("LiveTrackingView — axe", () => {
   it("renders the fleet map + driver list with zero a11y violations", async () => {
-    const { container } = render(
+    const { container } = await renderAndSettle(
       <ThemeProvider>
         <LiveTrackingView />
       </ThemeProvider>,

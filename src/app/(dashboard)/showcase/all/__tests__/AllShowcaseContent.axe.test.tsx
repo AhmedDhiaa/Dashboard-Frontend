@@ -17,11 +17,11 @@
  * each section).
  */
 
-import { render } from "@testing-library/react"
 import { describe, it, expect, vi } from "vitest"
 import { axe } from "vitest-axe"
 
 import { ThemeProvider } from "@/ui/theme/ThemeManager"
+import { renderAndSettle } from "@/shared/test-utils/axe-render"
 import { AllShowcaseContent } from "../AllShowcaseContent"
 
 // Next.js IntersectionObserver isn't available in jsdom — the StickyNav
@@ -53,7 +53,7 @@ const AXE_OPTIONS = {
 
 describe("AllShowcaseContent — axe", () => {
   it("renders the mega-page shell with zero axe violations", async () => {
-    const { container } = render(
+    const { container } = await renderAndSettle(
       <ThemeProvider>
         <AllShowcaseContent />
       </ThemeProvider>,

@@ -21,7 +21,7 @@ const envSchema = z.object({
   NEXTAUTH_SECRET: z.string().optional(),
   AUTH_SECRET: z.string().optional(),
   NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: z.string().optional(),
-  NEXT_PUBLIC_LOG_LEVEL: z.enum(["debug", "info", "warn", "error"]).default("info"),
+  NEXT_PUBLIC_LOG_LEVEL: z.enum(["debug", "info", "warn", "error", "silent"]).default("info"),
   NEXT_PUBLIC_LOG_ENDPOINT: z.string().optional(),
   NEXT_PUBLIC_SOCKET_URL: z.string().optional(),
   NEXT_PUBLIC_CLIENT_ID: z.string().optional(),

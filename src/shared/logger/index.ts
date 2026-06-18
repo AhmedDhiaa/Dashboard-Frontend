@@ -8,12 +8,17 @@
  * Output format: `[<ISO timestamp>] [<LEVEL>] <message> [...args]`.
  *
  * Level gating uses `NEXT_PUBLIC_LOG_LEVEL` (default "info"). In production,
- * set `NEXT_PUBLIC_LOG_LEVEL=warn` to drop debug/info noise.
+ * set `NEXT_PUBLIC_LOG_LEVEL=warn` to drop debug/info noise; `silent` drops
+ * everything (used by the test runner so passing suites don't print app logs).
  */
 
 /* eslint-disable no-console */
 
-export type LogLevel = "debug" | "info" | "warn" | "error"
+/** Levels that actually emit output (each maps 1:1 to a `console` method). */
+export type LoggableLevel = "debug" | "info" | "warn" | "error"
+/** Configurable threshold. `silent` is a gate-only value — it disables all
+ *  output and is never passed to a transport. */
+export type LogLevel = LoggableLevel | "silent"
 
 export interface Logger {
   debug(message: string, ...args: unknown[]): void
@@ -23,18 +28,18 @@ export interface Logger {
 }
 
 interface LogTransport {
-  log(level: LogLevel, message: string, args: unknown[]): void
+  log(level: LoggableLevel, message: string, args: unknown[]): void
 }
 
 class ConsoleTransport implements LogTransport {
-  log(level: LogLevel, message: string, args: unknown[]) {
+  log(level: LoggableLevel, message: string, args: unknown[]) {
     const prefix = `[${new Date().toISOString()}] [${level.toUpperCase()}]`
     console[level](prefix, message, ...args)
   }
 }
 
 interface LogEntry {
-  level: LogLevel
+  level: LoggableLevel
   message: string
   args: unknown[]
   ts: number
@@ -49,7 +54,7 @@ class RemoteTransport implements LogTransport {
     this.endpoint = endpoint
   }
 
-  log(level: LogLevel, message: string, args: unknown[]) {
+  log(level: LoggableLevel, message: string, args: unknown[]) {
     this.buffer.push({ level, message, args, ts: Date.now() })
     if (!this.flushTimer) {
       this.flushTimer = setTimeout(() => this.flush(), 2000)
@@ -76,7 +81,7 @@ class RemoteTransport implements LogTransport {
 class LoggerImpl implements Logger {
   private transports: LogTransport[]
   private minLevel: LogLevel
-  private readonly levels: LogLevel[] = ["debug", "info", "warn", "error"]
+  private readonly levels: LoggableLevel[] = ["debug", "info", "warn", "error"]
 
   constructor() {
     this.minLevel = (process.env.NEXT_PUBLIC_LOG_LEVEL as LogLevel | undefined) ?? "info"
@@ -86,11 +91,12 @@ class LoggerImpl implements Logger {
     }
   }
 
-  private shouldLog(level: LogLevel): boolean {
+  private shouldLog(level: LoggableLevel): boolean {
+    if (this.minLevel === "silent") return false
     return this.levels.indexOf(level) >= this.levels.indexOf(this.minLevel)
   }
 
-  private emit(level: LogLevel, message: string, args: unknown[]) {
+  private emit(level: LoggableLevel, message: string, args: unknown[]) {
     if (!this.shouldLog(level)) return
     this.transports.forEach(t => t.log(level, message, args))
   }

@@ -5,11 +5,11 @@
  * (jsdom can't run the Tailwind pipeline), everything else is enforced.
  */
 
-import { render } from "@testing-library/react"
 import { describe, it, expect, vi } from "vitest"
 import { axe } from "vitest-axe"
 
 import { ThemeProvider } from "@/ui/theme/ThemeManager"
+import { renderAndSettle } from "@/shared/test-utils/axe-render"
 
 // Give the reset page a token so it renders the FORM (password inputs) — the
 // a11y-relevant state — rather than the invalid-link fallback.
@@ -29,7 +29,7 @@ const AXE_OPTIONS = {
 
 describe("auth recovery pages — axe", () => {
   it("forgot-password page has zero a11y violations", async () => {
-    const { container } = render(
+    const { container } = await renderAndSettle(
       <ThemeProvider>
         <ForgotPasswordPage />
       </ThemeProvider>,
@@ -38,7 +38,7 @@ describe("auth recovery pages — axe", () => {
   })
 
   it("reset-password page (with a valid token) has zero a11y violations", async () => {
-    const { container } = render(
+    const { container } = await renderAndSettle(
       <ThemeProvider>
         <ResetPasswordPage />
       </ThemeProvider>,

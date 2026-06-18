@@ -26,12 +26,12 @@
  *     animation frame and isn't useful for static a11y validation.
  */
 
-import { render } from "@testing-library/react"
 import { describe, it, expect } from "vitest"
 import { axe } from "vitest-axe"
 import type { ReactElement } from "react"
 
 import { ThemeProvider } from "@/ui/theme/ThemeManager"
+import { renderAndSettle } from "@/shared/test-utils/axe-render"
 
 import { Alert, AlertTitle, AlertDescription } from "../alert"
 import { Avatar, AvatarFallback, AvatarImage } from "../avatar"
@@ -87,12 +87,8 @@ const AXE_OPTIONS = {
   },
 }
 
-function withTheme(ui: ReactElement) {
-  return <ThemeProvider>{ui}</ThemeProvider>
-}
-
 async function expectClean(ui: ReactElement) {
-  const { container } = render(withTheme(ui))
+  const { container } = await renderAndSettle(<ThemeProvider>{ui}</ThemeProvider>)
   const results = await axe(container, AXE_OPTIONS)
   expect(results).toHaveNoViolations()
 }
