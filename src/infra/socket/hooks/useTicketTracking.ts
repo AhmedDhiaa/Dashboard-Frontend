@@ -47,6 +47,12 @@ export interface UseTicketTrackingReturn {
 // HOOK IMPLEMENTATION
 // ============================================================================
 
+/**
+ * Real-time ticket-message tracking over SignalR — the ticket-side sibling of
+ * `useDriverTracking`. Complete and ready to wire into a ticket-chat UI; kept as
+ * public real-time API even though no screen consumes it yet.
+ * @public
+ */
 // eslint-disable-next-line max-lines-per-function
 export function useTicketTracking(options: UseTicketTrackingOptions = {}): UseTicketTrackingReturn {
   const { ticketId: initialTicketId = null, onReceiveTicketMessage, autoJoin = true, onError } = options

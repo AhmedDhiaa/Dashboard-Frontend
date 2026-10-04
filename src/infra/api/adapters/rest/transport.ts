@@ -20,7 +20,14 @@ type TokenProvider = () => string | null | Promise<string | null>
 
 let tokenProvider: TokenProvider = () => null
 
-/** Wire the bearer token source (e.g. the NextAuth session) for authed calls. */
+/**
+ * Wire the bearer token source (e.g. the NextAuth session) for authed calls.
+ * The documented extension point a host app calls to give the reference REST
+ * adapter its session token — intentionally part of the public surface even
+ * though this app (ABP by default) doesn't call it.
+ *
+ * @public
+ */
 export function setRestTokenProvider(provider: TokenProvider): void {
   tokenProvider = provider
 }

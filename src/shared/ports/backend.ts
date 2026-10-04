@@ -167,7 +167,14 @@ export interface EnumPort {
 
 // ─── The umbrella port + composition ────────────────────────────────────────
 
-/** A concrete backend implements all of these. The composition root picks one. */
+/**
+ * The full backend contract: a concrete backend implements all of these and the
+ * composition root picks one. Exposed as the single umbrella type that documents
+ * the backend seam for anyone porting the app to a new backend — kept even
+ * though the composition root wires the sub-ports individually.
+ *
+ * @public
+ */
 export interface BackendPort {
   auth: AuthPort
   config: ConfigPort

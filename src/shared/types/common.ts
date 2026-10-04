@@ -1,16 +1,12 @@
 /**
- * Common Type Definitions for Entity Relations
+ * Common entity type definitions.
  *
- * These types replace `any` types in service files for better type safety
+ * Shared audit/reference shapes that replace `any` in service files for better
+ * type safety. Keep this lean — add a type here only when it's used across more
+ * than one domain; domain-specific shapes belong with their domain.
  */
 
-// ============================================================================
-// BASE ENTITY TYPES
-// ============================================================================
-
-/**
- * Base entity with audit fields
- */
+/** Base entity with ABP audit fields. */
 export interface BaseEntity {
   id: string | number
   creationTime?: string
@@ -21,68 +17,4 @@ export interface BaseEntity {
   deleterId?: string | null
   deletionTime?: string | null
   concurrencyStamp?: string
-}
-
-/**
- * Base entity with tenant support
- */
-export interface TenantEntity extends BaseEntity {
-  tenantId?: string | null
-}
-
-// ============================================================================
-// USER & IDENTITY TYPES
-// ============================================================================
-
-/**
- * User reference (for creator, modifier, deleter fields)
- */
-export interface UserReference {
-  id: string
-  userName?: string
-  name?: string
-  surname?: string
-  email?: string
-  phoneNumber?: string
-}
-
-/**
- * Identity user (full user object)
- */
-export interface IdentityUser extends UserReference {
-  emailConfirmed?: boolean
-  phoneNumberConfirmed?: boolean
-  twoFactorEnabled?: boolean
-  lockoutEnd?: string | null
-  lockoutEnabled?: boolean
-  accessFailedCount?: number
-  roles?: string[]
-  isActive?: boolean
-}
-
-// ============================================================================
-// TENANT TYPE
-// ============================================================================
-
-/**
- * Tenant reference
- */
-export interface TenantReference {
-  id: string
-  name: string
-}
-
-// ============================================================================
-// CURRENCY TYPE
-// ============================================================================
-
-/**
- * Currency reference
- */
-export interface CurrencyReference {
-  id: string | number
-  code: string
-  name: string
-  foreignName?: string
-  symbol?: string
 }

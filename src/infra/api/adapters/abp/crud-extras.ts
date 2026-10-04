@@ -2,10 +2,10 @@
  * ABP CRUD sub-resource helpers.
  *
  * Generic operations a domain CRUD service layers on top of its base endpoint —
- * sub-paths, actions, multipart uploads. Kept generic (no domain types) so the
- * ABP transport stays in the adapter layer: the calling service supplies its
- * already-resolved endpoint and the entity type, and never touches `apiClient`
- * or hand-builds an ABP URL itself.
+ * sub-paths and actions. Kept generic (no domain types) so the ABP transport
+ * stays in the adapter layer: the calling service supplies its already-resolved
+ * endpoint and the entity type, and never touches `apiClient` or hand-builds an
+ * ABP URL itself.
  *
  * Goes through `apiClient`, so mock mode (axios-adapter swap) keeps working.
  */
@@ -32,23 +32,4 @@ export async function abpPostAction(
   body: unknown = {},
 ): Promise<void> {
   await apiClient.post(`${endpoint}/${action}/${id}`, body)
-}
-
-/** GET a resource addressed by encoded path segments, e.g. by-ref lookups. */
-export async function abpGetByPath<T>(endpoint: string, ...segments: (string | number)[]): Promise<T> {
-  const path = segments.map(s => encodeURIComponent(String(s))).join("/")
-  const { data } = await apiClient.get<T>(`${endpoint}/${path}`)
-  return data
-}
-
-/** POST multipart form-data to a URL. */
-export async function abpPostFormData<T>(url: string, formData: FormData): Promise<T> {
-  const { data } = await apiClient.post<T>(url, formData, { headers: { "Content-Type": "multipart/form-data" } })
-  return data
-}
-
-/** PUT multipart form-data to a URL. */
-export async function abpPutFormData<T>(url: string, formData: FormData): Promise<T> {
-  const { data } = await apiClient.put<T>(url, formData, { headers: { "Content-Type": "multipart/form-data" } })
-  return data
 }

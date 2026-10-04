@@ -51,7 +51,10 @@ export function useMapContext(): MapContextValue {
 }
 
 /**
- * Hook to access map instance (throws if not ready)
+ * Hook to access map instance (throws if not ready).
+ *
+ * Part of the map library's public consumer API, alongside `useMapEvents`.
+ * @public
  */
 export function useMap(): MapInstance {
   const { map, isReady } = useMapContext()
@@ -64,7 +67,10 @@ export function useMap(): MapInstance {
 }
 
 /**
- * Hook to access event bus
+ * Hook to access the map event bus.
+ *
+ * Part of the map library's public consumer API, alongside `useMap`.
+ * @public
  */
 export function useMapEvents(): EventBus {
   const { eventBus } = useMapContext()

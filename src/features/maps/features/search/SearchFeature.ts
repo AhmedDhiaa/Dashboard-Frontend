@@ -178,7 +178,11 @@ export class SearchFeature {
   }
 }
 
-// Factory function for feature registry
+/**
+ * Factory for the feature registry — mirrors the other map feature factories
+ * (drawing, markers, polygons). Public so a host can register search on a map.
+ * @public
+ */
 export function createSearchFeature(map: unknown, config: SearchFeatureConfig = {}): SearchFeature {
   return new SearchFeature(map, config)
 }
